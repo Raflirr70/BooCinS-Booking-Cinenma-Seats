@@ -55,6 +55,11 @@ func SetupRouter(
 			admin.GET("/genres/:id", genreHandler.GetByID)
 			admin.PUT("/genres/:id", genreHandler.Update)
 			admin.DELETE("/genres/:id", genreHandler.Delete)
+
+			// admin.GET("/Media", genreHandler.GetAll)
+			// admin.GET("/Media", genreHandler.GetAll)
+			// admin.GET("/genres", genreHandler.GetAll)
+			// admin.GET("/genres", genreHandler.GetAll)
 		}
 	}
 

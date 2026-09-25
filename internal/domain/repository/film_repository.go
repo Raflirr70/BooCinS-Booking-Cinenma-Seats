@@ -18,6 +18,7 @@ type FilmRepository interface {
 
 	AddGenre(ctx context.Context, filmID uint, genreID uint) error
 	RemoveGenre(ctx context.Context, filmID uint, genreID uint) error
+	ReplaceGenres(ctx context.Context, filmID uint, genreIDs []uint) error
 }
 
 type GenreRepository interface {

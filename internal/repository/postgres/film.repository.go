@@ -17,7 +17,7 @@ func NewFilmRepository(db *gorm.DB) repository.FilmRepository {
 }
 
 func (r *filmRepository) Create(ctx context.Context, film *entity.Film) error {
-	return r.db.WithContext(ctx).Create(film).Error
+	return r.db.WithContext(ctx).Omit("Genres").Create(film).Error
 }
 func (r *filmRepository) Update(ctx context.Context, film *entity.Film) error {
 	return r.db.WithContext(ctx).Where("id = ?", film.ID).Updates(film).Error
@@ -37,7 +37,7 @@ func (r *filmRepository) FindAllWithDetails(ctx context.Context) ([]entity.Film,
 }
 func (r *filmRepository) FindByID(ctx context.Context, id uint) (*entity.Film, error) {
 	var film entity.Film
-	err := r.db.WithContext(ctx).First(&film, id).Error
+	err := r.db.WithContext(ctx).Preload("Genres").Preload("Media").First(&film, id).Error
 	if err != nil {
 		return nil, err
 	}
@@ -63,8 +63,16 @@ func (r *filmRepository) RemoveGenre(ctx context.Context, filmID uint, genreID u
 	genre := entity.Genre{ID: genreID}
 	return r.db.WithContext(ctx).Model(&film).Association("Genres").Delete(&genre)
 }
+func (r *filmRepository) ReplaceGenres(ctx context.Context, filmID uint, genreIDs []uint) error {
+	film := entity.Film{ID: filmID}
+	genres := make([]entity.Genre, len(genreIDs))
+	for i, id := range genreIDs {
+		genres[i] = entity.Genre{ID: id}
+	}
+	return r.db.WithContext(ctx).Model(&film).Association("Genres").Replace(&genres)
+}
 
-// Genre
+// ============================ Genre ============================
 
 type genreRepository struct {
 	db *gorm.DB
@@ -96,7 +104,7 @@ func (r *genreRepository) FindByID(ctx context.Context, id uint) (*entity.Genre,
 	return &genre, nil
 }
 
-// Media
+// ============================ Media ============================
 
 type mediaRepository struct {
 	db *gorm.DB
