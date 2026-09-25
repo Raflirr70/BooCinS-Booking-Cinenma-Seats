@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/rafli/boocins/internal/domain/entity"
+	"gorm.io/gorm"
 )
 
 type RoomRepository interface {
@@ -13,6 +14,7 @@ type RoomRepository interface {
 	FindAll(ctx context.Context) ([]entity.Room, error)
 	FindByID(ctx context.Context, id uint) (*entity.Room, error)
 	FindAllWithDetail(ctx context.Context) ([]entity.Room, error)
+	WithTx(tx *gorm.DB) RoomRepository
 }
 
 type SeatRepository interface {
@@ -22,4 +24,5 @@ type SeatRepository interface {
 	FindByID(ctx context.Context, id uint) (*entity.Seat, error)
 	FindByRoom(ctx context.Context, filmID uint) ([]entity.Seat, error)
 	FindByRoomAndRow(ctx context.Context, roomID uint, row string) ([]entity.Seat, error)
+	WithTx(tx *gorm.DB) SeatRepository
 }

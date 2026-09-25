@@ -40,6 +40,9 @@ func (r *roomRepository) FindAllWithDetail(ctx context.Context) ([]entity.Room, 
 	err := r.db.WithContext(ctx).Preload("Seats").Find(&rooms).Error
 	return rooms, err
 }
+func (r *roomRepository) WithTx(tx *gorm.DB) repository.RoomRepository {
+	return &roomRepository{db: tx}
+}
 
 // ============================ Seats ============================
 
@@ -73,4 +76,7 @@ func (r *seatRepository) FindByRoomAndRow(ctx context.Context, roomID uint, row 
 	var seats []entity.Seat
 	err := r.db.WithContext(ctx).Where("room_id = ? AND row = ?", roomID, row).Order("number ASC").Find(&seats).Error
 	return seats, err
+}
+func (r *seatRepository) WithTx(tx *gorm.DB) repository.SeatRepository {
+	return &seatRepository{db: tx}
 }
