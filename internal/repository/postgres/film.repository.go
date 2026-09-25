@@ -25,12 +25,14 @@ func (r *filmRepository) Update(ctx context.Context, film *entity.Film) error {
 func (r *filmRepository) Delete(ctx context.Context, film *entity.Film) error {
 	return r.db.WithContext(ctx).Delete(film).Error
 }
-
 func (r *filmRepository) FindAll(ctx context.Context) ([]entity.Film, error) {
 	var films []entity.Film
-
 	err := r.db.WithContext(ctx).Find(&films).Error
-
+	return films, err
+}
+func (r *filmRepository) FindAllWithDetails(ctx context.Context) ([]entity.Film, error) {
+	var films []entity.Film
+	err := r.db.WithContext(ctx).Preload("Genres").Preload("Media").Find(&films).Error
 	return films, err
 }
 func (r *filmRepository) FindByID(ctx context.Context, id uint) (*entity.Film, error) {

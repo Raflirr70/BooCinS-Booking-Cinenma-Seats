@@ -12,6 +12,7 @@ type FilmRepository interface {
 	Delete(ctx context.Context, film *entity.Film) error
 
 	FindAll(ctx context.Context) ([]entity.Film, error)
+	FindAllWithDetails(ctx context.Context) ([]entity.Film, error)
 	FindByID(ctx context.Context, id uint) (*entity.Film, error)
 	FindByGenre(ctx context.Context, genre string) ([]entity.Film, error)
 

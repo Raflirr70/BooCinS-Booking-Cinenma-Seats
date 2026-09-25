@@ -9,7 +9,7 @@ import (
 type Film struct {
 	ID          uint           `json:"id" gorm:"primaryKey"`
 	Title       string         `json:"title" gorm:"type:varchar(255);not null"`
-	Cover       string         `json:"cover" gorm:"type:vvarchar(255);not null"`
+	Cover       string         `json:"cover" gorm:"type:varchar(255);not null"`
 	Synopsis    string         `json:"synopsis" gorm:"type:text"`
 	Description string         `json:"description" gorm:"type:text"`
 	Director    string         `json:"director" gorm:"type:varchar(150)"`

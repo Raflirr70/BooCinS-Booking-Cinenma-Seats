@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/joho/godotenv"
 	"github.com/rafli/boocins/config"
 	"github.com/rafli/boocins/internal/delivery/http/handler"
 	"github.com/rafli/boocins/internal/delivery/http/router"
@@ -15,6 +16,11 @@ import (
 
 func main() {
 	logger.Init()
+
+	if err := godotenv.Load(); err != nil {
+		log.Println("warning: .env file not found, using system env")
+	}
+
 	cfg := config.LoadConfig()
 
 	db, err := database.NewPostgresDB(cfg.Database)
@@ -28,7 +34,21 @@ func main() {
 	authUC := usecase.NewAuthUsecase(userRepo, redisClient, cfg.JWT)
 	authHandler := handler.NewAuthHandler(authUC)
 
-	r := router.SetupRouter(authHandler, cfg.JWT.Secret, redisClient)
+	filmRepo := postgres.NewFilmRepository(db)
+	filmUC := usecase.NewFilmUsecase(filmRepo)
+	filmHandler := handler.NewFilmHandler(filmUC)
+
+	genreRepo := postgres.NewGenreRepository(db)
+	genreUC := usecase.NewGenreUsecase(genreRepo)
+	genreHandler := handler.NewGenreHandler(genreUC)
+
+	r := router.SetupRouter(
+		authHandler,
+		filmHandler,
+		genreHandler,
+		cfg.JWT.Secret,
+		redisClient,
+	)
 
 	logger.Info.Printf("Server starting on port %s", cfg.Server.Port)
 	if err := r.Run(":" + cfg.Server.Port); err != nil {
