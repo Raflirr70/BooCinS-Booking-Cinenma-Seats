@@ -24,10 +24,11 @@ type GenreRepository interface {
 	Update(ctx context.Context, genre *entity.Genre) error
 	Delete(ctx context.Context, genre *entity.Genre) error
 
+	FindAll(ctx context.Context) ([]entity.Genre, error)
 	FindByID(ctx context.Context, id uint) (*entity.Genre, error)
 }
 
-type Media interface {
+type MediaRepository interface {
 	Create(ctx context.Context, media *entity.Media) error
 	Update(ctx context.Context, media *entity.Media) error
 	Delete(ctx context.Context, media *entity.Media) error
