@@ -16,7 +16,9 @@ type Room struct {
 type Seat struct {
 	ID     uint   `json:"id" gorm:"primaryKey"`
 	RoomID uint   `json:"room_id" gorm:"not null"`
-	Label  string `json:"label" gorm:"type:varchar(10);not null;uniqueIndex:idx_room_seat"`
+	Label  string `json:"label" gorm:"type:varchar(10);not null"`
+	Number int    `json:"number" gorm:"not null"`
+	Status string `json:"status" gorm:"type:varchar(20);not null;default:'active'"`
 	Room   Room   `json:"-" gorm:"foreignKey:RoomID;constraint:OnDelete:CASCADE"`
 }
 
@@ -34,12 +36,12 @@ type Schedule struct {
 }
 
 type ScheduleSeat struct {
-	ID         uint      `json:"id" gorm:"primaryKey"`
-	ScheduleID uint      `json:"schedule_id" gorm:"not null;uniqueIndex:idx_schedule_seat"`
-	SeatID     uint      `json:"seat_id" gorm:"not null;uniqueIndex:idx_schedule_seat"`
-	Status     string    `json:"status" gorm:"type:varchar(20);not null;default:'available'"`
+	ID         uint       `json:"id" gorm:"primaryKey"`
+	ScheduleID uint       `json:"schedule_id" gorm:"not null;uniqueIndex:idx_schedule_seat"`
+	SeatID     uint       `json:"seat_id" gorm:"not null;uniqueIndex:idx_schedule_seat"`
+	Status     string     `json:"status" gorm:"type:varchar(20);not null;default:'available'"`
 	LockedAt   *time.Time `json:"locked_at"`
-	UpdatedAt  time.Time `json:"updated_at"`
-	Schedule   Schedule  `json:"-" gorm:"foreignKey:ScheduleID;constraint:OnDelete:CASCADE"`
-	Seat       Seat      `json:"-" gorm:"foreignKey:SeatID"`
+	UpdatedAt  time.Time  `json:"updated_at"`
+	Schedule   Schedule   `json:"-" gorm:"foreignKey:ScheduleID;constraint:OnDelete:CASCADE"`
+	Seat       Seat       `json:"-" gorm:"foreignKey:SeatID"`
 }
