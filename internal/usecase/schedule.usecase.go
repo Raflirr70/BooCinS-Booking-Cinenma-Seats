@@ -51,6 +51,13 @@ func (u roomUsecase) Create(ctx context.Context, room *entity.Room, seatRows map
 	})
 }
 func (u roomUsecase) Update(ctx context.Context, room *entity.Room, seatRows map[string]int) error {
+	if len(seatRows) > 0 {
+		total := 0
+		for _, n := range seatRows {
+			total += n
+		}
+		room.Capacity = total
+	}
 	return u.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		roomRepo := u.roomRepo.WithTx(tx)
 		seatRepo := u.seatRepo.WithTx(tx)

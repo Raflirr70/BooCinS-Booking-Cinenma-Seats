@@ -24,8 +24,9 @@ type Film struct {
 }
 
 type Genre struct {
-	ID   uint   `json:"id" gorm:"primaryKey"`
-	Name string `json:"name" gorm:"type:varchar(50);uniqueIndex;not null"`
+	ID        uint           `json:"id" gorm:"primaryKey"`
+	Name      string         `json:"name" gorm:"type:varchar(50);uniqueIndex;not null"`
+	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
 type Media struct {

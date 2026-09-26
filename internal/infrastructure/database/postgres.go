@@ -25,6 +25,12 @@ func NewPostgresDB(cfg config.DatabaseConfig) (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to migrate: %w", err)
 	}
 
+	db.Exec("ALTER TABLE seats DROP CONSTRAINT IF EXISTS seats_room_id_label_key")
+	db.Exec("ALTER TABLE rooms DROP CONSTRAINT IF EXISTS rooms_name_key")
+	db.Exec("DROP INDEX IF EXISTS idx_rooms_name")
+	db.Exec("DROP INDEX IF EXISTS idx_rooms_name_active")
+	db.Exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_rooms_name_active ON rooms(name) WHERE deleted_at IS NULL")
+
 	seedDefaults(db)
 
 	return db, nil
@@ -54,6 +60,7 @@ func runMigrations(db *gorm.DB) error {
 		&entity.Promo{},
 		&entity.AuditLog{},
 	)
+
 }
 
 func seedDefaults(db *gorm.DB) {

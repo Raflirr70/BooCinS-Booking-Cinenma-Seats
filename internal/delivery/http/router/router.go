@@ -11,6 +11,7 @@ func SetupRouter(
 	authHandler *handler.AuthHandler,
 	filmHandler *handler.FilmHandler,
 	genreHandler *handler.GenreHandler,
+	roomHandler *handler.RoomHandler,
 	jwtSecret string,
 	redisClient *redis.Client,
 ) *gin.Engine {
@@ -56,7 +57,7 @@ func SetupRouter(
 			admin.PUT("/genres/:id", genreHandler.Update)
 			admin.DELETE("/genres/:id", genreHandler.Delete)
 
-			// admin.GET("/Media", genreHandler.GetAll)
+			admin.POST("/room", roomHandler.Create)
 			// admin.GET("/Media", genreHandler.GetAll)
 			// admin.GET("/genres", genreHandler.GetAll)
 			// admin.GET("/genres", genreHandler.GetAll)

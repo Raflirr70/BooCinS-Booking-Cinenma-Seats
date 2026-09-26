@@ -42,10 +42,19 @@ func main() {
 	genreUC := usecase.NewGenreUsecase(genreRepo)
 	genreHandler := handler.NewGenreHandler(genreUC)
 
+	seatRepo := postgres.NewSeatRepository(db)
+	// seatUC := usecase.NewSeatUsecase(seatRepo)
+	// seatHandler := handler.NewSeatHandler(seatUC)
+
+	roomRepo := postgres.NewRoomRepository(db)
+	roomUC := usecase.NewRoomUsecase(roomRepo, seatRepo, db)
+	roomHandler := handler.NewRoomHandler(roomUC)
+
 	r := router.SetupRouter(
 		authHandler,
 		filmHandler,
 		genreHandler,
+		roomHandler,
 		cfg.JWT.Secret,
 		redisClient,
 	)

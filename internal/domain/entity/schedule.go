@@ -15,13 +15,12 @@ type Room struct {
 }
 
 type Seat struct {
-	ID        uint           `json:"id" gorm:"primaryKey"`
-	RoomID    uint           `json:"room_id" gorm:"not null"`
-	Label     string         `json:"label" gorm:"type:varchar(10);not null"`
-	Number    int            `json:"number" gorm:"not null"`
-	Status    string         `json:"status" gorm:"type:varchar(20);not null;default:'active'"`
-	Room      Room           `json:"-" gorm:"foreignKey:RoomID;constraint:OnDelete:CASCADE"`
-	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+	ID     uint   `json:"id" gorm:"primaryKey"`
+	RoomID uint   `json:"room_id" gorm:"not null"`
+	Label  string `json:"label" gorm:"type:varchar(10);not null"`
+	Number int    `json:"number" gorm:"not null"`
+	Status string `json:"status" gorm:"type:varchar(20);not null;default:'active'"`
+	Room   Room   `json:"-" gorm:"foreignKey:RoomID;constraint:OnDelete:CASCADE"`
 }
 
 type Schedule struct {

@@ -78,7 +78,7 @@ type MediaResponse struct {
 	Type string `json:"type"`
 	URL  string `json:"url"`
 }
-
+	
 // ============================ ToEntity ============================
 func (r *CreateFilmRequest) ToEntityFilm() *entity.Film {
 	genres := make([]entity.Genre, len(r.GenreIDs))
