@@ -18,7 +18,6 @@ type roomUsecase struct {
 func NewRoomUsecase(roomRepo repository.RoomRepository, seatRepo repository.SeatRepository, db *gorm.DB) uc.RoomUsecase {
 	return &roomUsecase{roomRepo: roomRepo, seatRepo: seatRepo, db: db}
 }
-
 func (u roomUsecase) GetAll(ctx context.Context) ([]entity.Room, error) {
 	return u.roomRepo.FindAll(ctx)
 }
@@ -33,7 +32,6 @@ func (u roomUsecase) Create(ctx context.Context, room *entity.Room, seatRows map
 		if err := roomRepo.Create(ctx, room); err != nil {
 			return err
 		}
-
 		// 2. Buat seat berdasarkan konfigurasi
 		for row, total := range seatRows {
 			for number := 1; number <= total; number++ {
@@ -73,7 +71,6 @@ func (u roomUsecase) Update(ctx context.Context, room *entity.Room, seatRows map
 	})
 }
 func (u roomUsecase) UpdateSeats(ctx context.Context, seatRepo repository.SeatRepository, roomID uint, row string, newTotal int) error {
-
 	seats, err := seatRepo.FindByRoomAndRow(ctx, roomID, row)
 	if err != nil {
 		return err

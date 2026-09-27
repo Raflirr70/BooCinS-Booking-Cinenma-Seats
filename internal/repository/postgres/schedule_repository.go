@@ -80,3 +80,71 @@ func (r *seatRepository) FindByRoomAndRow(ctx context.Context, roomID uint, row 
 func (r *seatRepository) WithTx(tx *gorm.DB) repository.SeatRepository {
 	return &seatRepository{db: tx}
 }
+
+// ============================ Schedule ============================
+
+type scheduleRepository struct {
+	db *gorm.DB
+}
+
+func NewScheduleRepository(db *gorm.DB) repository.ScheduleRepository {
+	return &scheduleRepository{db: db}
+}
+func (r *scheduleRepository) Create(ctx context.Context, schedule *entity.Schedule) error {
+	return r.db.WithContext(ctx).Create(schedule).Error
+}
+func (r *scheduleRepository) Update(ctx context.Context, schedule *entity.Schedule) error {
+	return r.db.WithContext(ctx).Where("id = ?", schedule.ID).Updates(schedule).Error
+}
+func (r *scheduleRepository) Delete(ctx context.Context, schedule *entity.Schedule) error {
+	return r.db.WithContext(ctx).Delete(schedule).Error
+}
+func (r *scheduleRepository) FindAll(ctx context.Context) ([]entity.Schedule, error) {
+	var schedules []entity.Schedule
+	err := r.db.WithContext(ctx).Preload("ScheduleSeat").Find(&schedules).Error
+	return schedules, err
+}
+func (r *scheduleRepository) FindByID(ctx context.Context, id uint) (*entity.Schedule, error) {
+	var schedule *entity.Schedule
+	err := r.db.WithContext(ctx).Preload("ScheduleSeat").Where("id = ?", id).First(&schedule).Error
+	return schedule, err
+}
+func (r *scheduleRepository) FindByRoom(ctx context.Context, roomID uint) ([]entity.Schedule, error) {
+	var schedules []entity.Schedule
+	err := r.db.WithContext(ctx).Preload("ScheduleSeat").Where("room_id = ?", roomID).Find(&schedules).Error
+	return schedules, err
+}
+func (r *scheduleRepository) FindByFilm(ctx context.Context, filmID uint) ([]entity.Schedule, error) {
+	var schedules []entity.Schedule
+	err := r.db.WithContext(ctx).Preload("ScheduleSeat").Where("film_id = ?", filmID).Find(&schedules).Error
+	return schedules, err
+}
+
+// ============================ ScheduleSeats ============================
+
+type scheduleSeatRepository struct {
+	db *gorm.DB
+}
+
+func NewScheduleSeatRepository(db *gorm.DB) repository.ScheduleSeatRepository {
+	return &scheduleSeatRepository{db: db}
+}
+func (r *scheduleSeatRepository) Create(ctx context.Context, ss *entity.ScheduleSeat) error {
+	return r.db.WithContext(ctx).Create(ss).Error
+}
+func (r *scheduleSeatRepository) Update(ctx context.Context, ss *entity.ScheduleSeat) error {
+	return r.db.WithContext(ctx).Where("id = ?", ss.ID).Updates(ss).Error
+}
+func (r *scheduleSeatRepository) Delete(ctx context.Context, ss *entity.ScheduleSeat) error {
+	return r.db.WithContext(ctx).Delete(ss).Error
+}
+func (r *scheduleSeatRepository) FindByID(ctx context.Context, id uint) (*entity.ScheduleSeat, error) {
+	var scheduleSeat *entity.ScheduleSeat
+	err := r.db.WithContext(ctx).Where("id = ?", id).First(&scheduleSeat).Error
+	return scheduleSeat, err
+}
+func (r *scheduleSeatRepository) FindBySchedule(ctx context.Context, scheduleID uint) ([]entity.ScheduleSeat, error) {
+	var scheduleSeats []entity.ScheduleSeat
+	err := r.db.WithContext(ctx).Find(&scheduleSeats).Error
+	return scheduleSeats, err
+}

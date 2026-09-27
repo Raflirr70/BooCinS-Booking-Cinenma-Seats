@@ -28,16 +28,16 @@ type CreateMediaRequest struct {
 
 // ============================ UPDATE REQUEST ============================
 type UpdateFilmRequest struct {
-	Title       *string               `json:"title"`
-	Cover       *string               `json:"cover"`
-	Synopsis    *string               `json:"synopsis"`
-	Description *string               `json:"description"`
-	Director    *string               `json:"director"`
-	Duration    *int                  `json:"duration" binding:"omitempty,gt=0"`
-	Price       *float64              `json:"price" binding:"omitempty,gt=0"`
-	Status      *string               `json:"status" binding:"omitempty,oneof=coming_soon now_showing finished"`
-	GenreIDs    *[]uint               `json:"genre_ids"`
-	Media       []*UpdateMediaRequest `json:"media"`
+	Title       string               `json:"title"`
+	Cover       string               `json:"cover"`
+	Synopsis    string               `json:"synopsis"`
+	Description string               `json:"description"`
+	Director    string               `json:"director"`
+	Duration    int                  `json:"duration" binding:"omitempty,gt=0"`
+	Price       float64              `json:"price" binding:"omitempty,gt=0"`
+	Status      string               `json:"status" binding:"omitempty,oneof=coming_soon now_showing finished"`
+	GenreIDs    []uint               `json:"genre_ids"`
+	Media       []UpdateMediaRequest `json:"media"`
 }
 type UpdateMediaRequest struct {
 	Type string `json:"type"`
@@ -78,7 +78,7 @@ type MediaResponse struct {
 	Type string `json:"type"`
 	URL  string `json:"url"`
 }
-	
+
 // ============================ ToEntity ============================
 func (r *CreateFilmRequest) ToEntityFilm() *entity.Film {
 	genres := make([]entity.Genre, len(r.GenreIDs))

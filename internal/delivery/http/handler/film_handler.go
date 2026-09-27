@@ -82,31 +82,31 @@ func (h *FilmHandler) Update(c *gin.Context) {
 		return
 	}
 	film := &entity.Film{ID: uint(id)}
-	if req.Title != nil {
-		film.Title = *req.Title
+	if &req.Title != nil {
+		film.Title = req.Title
 	}
-	if req.Cover != nil {
-		film.Cover = *req.Cover
+	if &req.Cover != nil {
+		film.Cover = req.Cover
 	}
-	if req.Synopsis != nil {
-		film.Synopsis = *req.Synopsis
+	if &req.Synopsis != nil {
+		film.Synopsis = req.Synopsis
 	}
-	if req.Description != nil {
-		film.Description = *req.Description
+	if &req.Description != nil {
+		film.Description = req.Description
 	}
-	if req.Director != nil {
-		film.Director = *req.Director
+	if &req.Director != nil {
+		film.Director = req.Director
 	}
-	if req.Duration != nil {
-		film.Duration = *req.Duration
+	if &req.Duration != nil {
+		film.Duration = req.Duration
 	}
-	if req.Price != nil {
-		film.Price = *req.Price
+	if &req.Price != nil {
+		film.Price = req.Price
 	}
-	if req.Status != nil {
-		film.Status = *req.Status
+	if &req.Status != nil {
+		film.Status = req.Status
 	}
-	if err := h.filmUC.Update(c.Request.Context(), film, req.GenreIDs); err != nil {
+	if err := h.filmUC.Update(c.Request.Context(), film, &req.GenreIDs); err != nil {
 		c.JSON(http.StatusInternalServerError, response.Error(err.Error()))
 		return
 	}

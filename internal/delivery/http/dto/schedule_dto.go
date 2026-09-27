@@ -62,7 +62,7 @@ func ToRoomListResponse(room *entity.Room) RoomResponse {
 
 func (m *SeatRows) UnmarshalJSON(data []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(data))
-	if _, err := dec.Token(); err != nil { // buka '{'
+	if _, err := dec.Token(); err != nil {
 		return err
 	}
 	if *m == nil {
@@ -78,7 +78,7 @@ func (m *SeatRows) UnmarshalJSON(data []byte) error {
 			return fmt.Errorf("seat_rows: kunci baris harus string")
 		}
 		if _, dup := (*m)[key]; dup {
-			return fmt.Errorf("baris seat duplikat: %q", key) // ← tolak Z dua kali
+			return fmt.Errorf("baris seat duplikat: %q", key)
 		}
 		var val int
 		if err := dec.Decode(&val); err != nil {
