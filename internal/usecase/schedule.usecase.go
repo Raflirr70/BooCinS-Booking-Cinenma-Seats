@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/rafli/boocins/internal/domain/entity"
 	"github.com/rafli/boocins/internal/domain/repository"
@@ -205,6 +206,14 @@ func NewScheduleUsecase(scheduleRepo repository.ScheduleRepository, filmRepo rep
 }
 
 func (u scheduleUsecase) Create(ctx context.Context, schedule *entity.Schedule) error {
+	if _, err := time.Parse("2006-01-02", schedule.ShowDate); err != nil {
+		return uc.ErrInvalidScheduleDate
+	}
+	if _, err := time.Parse("15:04:05", schedule.ShowTime); err != nil {
+		if _, err2 := time.Parse("15:04", schedule.ShowTime); err2 != nil {
+			return uc.ErrInvalidScheduleTime
+		}
+	}
 	if _, err := u.filmRepo.FindByID(ctx, schedule.FilmID); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return uc.ErrFilmNotFound
@@ -220,10 +229,41 @@ func (u scheduleUsecase) Create(ctx context.Context, schedule *entity.Schedule) 
 	}
 	return u.scheduleRepo.Create(ctx, schedule)
 }
-func (u scheduleUsecase) Update(ctx context.Context, schedule *entity.Schedule) error { return nil }
+func (u scheduleUsecase) Update(ctx context.Context, schedule *entity.Schedule) error {
+	if _, err := u.scheduleRepo.FindByID(ctx, schedule.ID); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return uc.ErrScheduleNotFound
+		}
+		return err
+	}
+	if schedule.FilmID != 0 {
+		if _, err := u.filmRepo.FindByID(ctx, schedule.FilmID); err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return uc.ErrFilmNotFound
+			}
+			return err
+		}
+	}
+	if schedule.RoomID != 0 {
+		if _, err := u.roomRepo.FindByID(ctx, schedule.RoomID); err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return uc.ErrRoomNotFound
+			}
+			return err
+		}
+	}
+	return u.scheduleRepo.Update(ctx, schedule)
+}
 func (u scheduleUsecase) Delete(ctx context.Context, schedule *entity.Schedule) error { return nil }
 func (u scheduleUsecase) GetByID(ctx context.Context, id uint) (*entity.Schedule, error) {
-	return nil, nil
+	schedule, err := u.scheduleRepo.FindByID(ctx, id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, uc.ErrScheduleNotFound
+		}
+		return nil, err
+	}
+	return schedule, nil
 }
 func (u scheduleUsecase) GetByFilm(ctx context.Context, filmID uint) ([]entity.Schedule, error) {
 	return nil, nil

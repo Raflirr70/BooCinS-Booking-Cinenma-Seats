@@ -121,3 +121,37 @@ func (h *ScheduleHandler) Create(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, response.Success("Created Schedule", nil))
 }
+func (h *ScheduleHandler) Update(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.Error("invalid id"))
+		return
+	}
+	var req dto.UpdateScheduleRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, response.Error(err.Error()))
+		return
+	}
+	schedule, err := h.scheduleUC.GetByID(c.Request.Context(), uint(id))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, response.Error(err.Error()))
+		return
+	}
+	if &req.FilmID != nil {
+		schedule.FilmID = req.FilmID
+	}
+	if &req.RoomID != nil {
+		schedule.RoomID = req.RoomID
+	}
+	if &req.ShowDate != nil {
+		schedule.ShowDate = req.ShowDate
+	}
+	if &req.ShowTime != nil {
+		schedule.ShowTime = req.ShowTime
+	}
+	if err := h.scheduleUC.Update(c.Request.Context(), schedule); err != nil {
+		c.JSON(http.StatusInternalServerError, response.Error(err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, response.Success("Updated schedule", dto.ToScheduleResponse(schedule)))
+}

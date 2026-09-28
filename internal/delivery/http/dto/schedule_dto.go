@@ -22,6 +22,13 @@ type CreateScheduleRequest struct {
 	ShowTime string `json:"show_time" binding:"required"`
 	Status   bool   `json:"status" binding:"required"`
 }
+type UpdateScheduleRequest struct {
+	FilmID   uint   `json:"film_id"`
+	RoomID   uint   `json:"room_id"`
+	ShowDate string `json:"show_date"`
+	ShowTime string `json:"show_time"`
+	Status   bool   `json:"status"`
+}
 type ScheduleResponse struct {
 	FilmID    uint      `json:"film_id" gorm:"not null"`
 	RoomID    uint      `json:"room_id" gorm:"not null"`
@@ -75,7 +82,25 @@ func (r *CreateScheduleRequest) ToEntitySchedule() *entity.Schedule {
 		Status:   r.Status,
 	}
 }
+func (r *UpdateScheduleRequest) ToEntitySchedule() *entity.Schedule {
+	return &entity.Schedule{
+		FilmID:   r.FilmID,
+		RoomID:   r.RoomID,
+		ShowDate: r.ShowDate,
+		ShowTime: r.ShowTime,
+		Status:   r.Status,
+	}
+}
 
+func ToScheduleResponse(schedule *entity.Schedule) ScheduleResponse {
+	return ScheduleResponse{
+		FilmID:   schedule.FilmID,
+		RoomID:   schedule.RoomID,
+		ShowDate: schedule.ShowDate,
+		ShowTime: schedule.ShowTime,
+		Status:   schedule.Status,
+	}
+}
 func ToRoomResponse(room *entity.Room) RoomResponse {
 	return RoomResponse{
 		Name:     room.Name,

@@ -10,6 +10,9 @@ import (
 
 var ErrFilmNotFound = errors.New("film not found")
 var ErrRoomNotFound = errors.New("room not found")
+var ErrScheduleNotFound = errors.New("schedule not found")
+var ErrInvalidScheduleDate = errors.New("show_date must be format YYYY-MM-DD")
+var ErrInvalidScheduleTime = errors.New("show_time must be format HH:MM:SS")
 
 type RoomUsecase interface {
 	GetAll(ctx context.Context) ([]entity.Room, error)

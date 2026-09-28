@@ -106,7 +106,7 @@ func (r *scheduleRepository) FindAll(ctx context.Context) ([]entity.Schedule, er
 }
 func (r *scheduleRepository) FindByID(ctx context.Context, id uint) (*entity.Schedule, error) {
 	var schedule *entity.Schedule
-	err := r.db.WithContext(ctx).Preload("ScheduleSeat").Where("id = ?", id).First(&schedule).Error
+	err := r.db.WithContext(ctx).Where("id = ?", id).First(&schedule).Error
 	return schedule, err
 }
 func (r *scheduleRepository) FindByRoom(ctx context.Context, roomID uint) ([]entity.Schedule, error) {
