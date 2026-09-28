@@ -155,3 +155,19 @@ func (h *ScheduleHandler) Update(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.Success("Updated schedule", dto.ToScheduleResponse(schedule)))
 }
+func (h *ScheduleHandler) Delete(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.Error(err.Error()))
+		return
+	}
+	schedule, err := h.scheduleUC.GetByID(c.Request.Context(), uint(id))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, response.Error(err.Error()))
+		return
+	}
+	if err := h.scheduleUC.Delete(c.Request.Context(), schedule); err != nil {
+		c.JSON(http.StatusInternalServerError, response.Error(err.Error()))
+	}
+	c.JSON(http.StatusOK, response.Success("Deleted Schedule", nil))
+}

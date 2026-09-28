@@ -254,7 +254,9 @@ func (u scheduleUsecase) Update(ctx context.Context, schedule *entity.Schedule) 
 	}
 	return u.scheduleRepo.Update(ctx, schedule)
 }
-func (u scheduleUsecase) Delete(ctx context.Context, schedule *entity.Schedule) error { return nil }
+func (u scheduleUsecase) Delete(ctx context.Context, schedule *entity.Schedule) error {
+	return u.scheduleRepo.Delete(ctx, schedule)
+}
 func (u scheduleUsecase) GetByID(ctx context.Context, id uint) (*entity.Schedule, error) {
 	schedule, err := u.scheduleRepo.FindByID(ctx, id)
 	if err != nil {
