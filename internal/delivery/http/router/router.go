@@ -12,6 +12,7 @@ func SetupRouter(
 	filmHandler *handler.FilmHandler,
 	genreHandler *handler.GenreHandler,
 	roomHandler *handler.RoomHandler,
+	scheduleHandler *handler.ScheduleHandler,
 	jwtSecret string,
 	redisClient *redis.Client,
 ) *gin.Engine {
@@ -65,6 +66,8 @@ func SetupRouter(
 			// admin.GET("/Media", genreHandler.GetAll)
 			// admin.GET("/genres", genreHandler.GetAll)
 			// admin.GET("/genres", genreHandler.GetAll)
+
+			admin.POST("/schedule", scheduleHandler.Create)
 		}
 	}
 

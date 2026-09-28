@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/rafli/boocins/internal/domain/entity"
 )
@@ -13,6 +14,21 @@ type SeatRows map[string]int
 type CreateRoomRequest struct {
 	Name     string   `json:"name" binding:"required"`
 	SeatRows SeatRows `json:"seat_rows" binding:"required"`
+}
+type CreateScheduleRequest struct {
+	FilmID   uint   `json:"film_id" binding:"required"`
+	RoomID   uint   `json:"room_id" binding:"required"`
+	ShowDate string `json:"show_date" binding:"required"`
+	ShowTime string `json:"show_time" binding:"required"`
+	Status   bool   `json:"status" binding:"required"`
+}
+type ScheduleResponse struct {
+	FilmID    uint      `json:"film_id" gorm:"not null"`
+	RoomID    uint      `json:"room_id" gorm:"not null"`
+	ShowDate  string    `json:"show_date" gorm:"type:date;not null"`
+	ShowTime  string    `json:"show_time" gorm:"type:time;not null"`
+	Status    bool      `json:"status" gorm:"not null;default:true"`
+	CreatedAt time.Time `json:"created_at"`
 }
 type RoomResponse struct {
 	Name     string `json:"name"`
@@ -48,6 +64,15 @@ func ToSeatListResponse(seat *entity.Seat) SeatRespone {
 		Label:  seat.Label,
 		Number: seat.Number,
 		Status: seat.Status,
+	}
+}
+func (r *CreateScheduleRequest) ToEntitySchedule() *entity.Schedule {
+	return &entity.Schedule{
+		FilmID:   r.FilmID,
+		RoomID:   r.RoomID,
+		ShowDate: r.ShowDate,
+		ShowTime: r.ShowTime,
+		Status:   r.Status,
 	}
 }
 

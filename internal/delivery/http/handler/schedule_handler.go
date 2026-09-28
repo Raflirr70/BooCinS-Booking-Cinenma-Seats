@@ -96,3 +96,28 @@ func (h *RoomHandler) Delete(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.Success("Room Delete", nil))
 }
+
+type ScheduleHandler struct {
+	scheduleUC usecase.ScheduleUsecase
+}
+
+func NewScheduleHandler(scheduleUC usecase.ScheduleUsecase) *ScheduleHandler {
+	return &ScheduleHandler{scheduleUC: scheduleUC}
+}
+func (h *ScheduleHandler) Create(c *gin.Context) {
+	var req dto.CreateScheduleRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, response.Error(err.Error()))
+		return
+	}
+	schedule := req.ToEntitySchedule()
+	if err := h.scheduleUC.Create(c.Request.Context(), schedule); err != nil {
+		if errors.Is(err, usecase.ErrFilmNotFound) || errors.Is(err, usecase.ErrRoomNotFound) {
+			c.JSON(http.StatusNotFound, response.Error(err.Error()))
+			return
+		}
+		c.JSON(http.StatusInternalServerError, response.Error(err.Error()))
+		return
+	}
+	c.JSON(http.StatusCreated, response.Success("Created Schedule", nil))
+}

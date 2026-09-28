@@ -2,10 +2,14 @@ package usecase
 
 import (
 	"context"
+	"errors"
 
 	"github.com/rafli/boocins/internal/domain/entity"
 	"github.com/rafli/boocins/internal/domain/repository"
 )
+
+var ErrFilmNotFound = errors.New("film not found")
+var ErrRoomNotFound = errors.New("room not found")
 
 type RoomUsecase interface {
 	GetAll(ctx context.Context) ([]entity.Room, error)
@@ -24,7 +28,7 @@ type SeatUsecase interface {
 	GetByID(ctx context.Context, id uint) (*entity.Seat, error)
 	Delete(ctx context.Context, seat *entity.Seat) error
 }
-type Schedule interface {
+type ScheduleUsecase interface {
 	Create(ctx context.Context, schedule *entity.Schedule) error
 	Update(ctx context.Context, schedule *entity.Schedule) error
 	Delete(ctx context.Context, schedule *entity.Schedule) error
@@ -33,7 +37,7 @@ type Schedule interface {
 	GetByRoom(ctx context.Context, roomID uint) ([]entity.Schedule, error)
 }
 
-type ScheduleSeat interface {
+type ScheduleSeatUsecase interface {
 	Create(ctx context.Context, ss *entity.ScheduleSeat) error
 	Update(ctx context.Context, ss *entity.ScheduleSeat) error
 	Delete(ctx context.Context, ss *entity.ScheduleSeat) error

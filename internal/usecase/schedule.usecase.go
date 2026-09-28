@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 
 	"github.com/rafli/boocins/internal/domain/entity"
 	"github.com/rafli/boocins/internal/domain/repository"
@@ -191,4 +192,59 @@ func (u seatUsecase) GetByID(ctx context.Context, id uint) (*entity.Seat, error)
 }
 func (u seatUsecase) Delete(ctx context.Context, seat *entity.Seat) error {
 	return u.seatRepo.Delete(ctx, seat)
+}
+
+type scheduleUsecase struct {
+	scheduleRepo repository.ScheduleRepository
+	filmRepo     repository.FilmRepository
+	roomRepo     repository.RoomRepository
+}
+
+func NewScheduleUsecase(scheduleRepo repository.ScheduleRepository, filmRepo repository.FilmRepository, roomRepo repository.RoomRepository) uc.ScheduleUsecase {
+	return &scheduleUsecase{scheduleRepo: scheduleRepo, filmRepo: filmRepo, roomRepo: roomRepo}
+}
+
+func (u scheduleUsecase) Create(ctx context.Context, schedule *entity.Schedule) error {
+	if _, err := u.filmRepo.FindByID(ctx, schedule.FilmID); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return uc.ErrFilmNotFound
+		}
+		return err
+	}
+	if _, err := u.roomRepo.FindByID(ctx, schedule.RoomID); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return uc.ErrRoomNotFound
+		}
+		return err
+
+	}
+	return u.scheduleRepo.Create(ctx, schedule)
+}
+func (u scheduleUsecase) Update(ctx context.Context, schedule *entity.Schedule) error { return nil }
+func (u scheduleUsecase) Delete(ctx context.Context, schedule *entity.Schedule) error { return nil }
+func (u scheduleUsecase) GetByID(ctx context.Context, id uint) (*entity.Schedule, error) {
+	return nil, nil
+}
+func (u scheduleUsecase) GetByFilm(ctx context.Context, filmID uint) ([]entity.Schedule, error) {
+	return nil, nil
+}
+func (u scheduleUsecase) GetByRoom(ctx context.Context, roomID uint) ([]entity.Schedule, error) {
+	return nil, nil
+}
+
+type scheduleSeatUsecase struct {
+	scheduleSeatRepo repository.ScheduleSeatRepository
+}
+
+func NewScheduleSeatUsecase(scheduleSeatRepo repository.ScheduleSeatRepository) uc.ScheduleSeatUsecase {
+	return &scheduleSeatUsecase{scheduleSeatRepo: scheduleSeatRepo}
+}
+func (u scheduleSeatUsecase) Create(ctx context.Context, ss *entity.ScheduleSeat) error { return nil }
+func (u scheduleSeatUsecase) Update(ctx context.Context, ss *entity.ScheduleSeat) error { return nil }
+func (u scheduleSeatUsecase) Delete(ctx context.Context, ss *entity.ScheduleSeat) error { return nil }
+func (u scheduleSeatUsecase) GetBySchedule(ctx context.Context, scheduleID uint) ([]entity.ScheduleSeat, error) {
+	return nil, nil
+}
+func (u scheduleSeatUsecase) GetByID(ctx context.Context, id uint) (*entity.ScheduleSeat, error) {
+	return nil, nil
 }
