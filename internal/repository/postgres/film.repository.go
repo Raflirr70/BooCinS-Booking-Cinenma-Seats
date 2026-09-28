@@ -43,13 +43,13 @@ func (r *filmRepository) FindByID(ctx context.Context, id uint) (*entity.Film, e
 	}
 	return &film, nil
 }
-func (r *filmRepository) FindByGenre(ctx context.Context, genre string) ([]entity.Film, error) {
+func (r *filmRepository) FindByGenre(ctx context.Context, genreID uint) ([]entity.Film, error) {
 	var films []entity.Film
 
 	err := r.db.WithContext(ctx).
 		Joins("JOIN film_genres ON film_genres.film_id = films.id").
 		Joins("JOIN genres ON genres.id = film_genres.genre_id").
-		Where("genres.name = ?", genre).
+		Where("genres.id = ?", genreID).
 		Find(&films).Error
 	return films, err
 }
@@ -88,7 +88,7 @@ func (r *genreRepository) Update(ctx context.Context, genre *entity.Genre) error
 	return r.db.WithContext(ctx).Where("id = ?", genre.ID).Updates(genre).Error
 }
 func (r *genreRepository) Delete(ctx context.Context, genre *entity.Genre) error {
-	return r.db.WithContext(ctx).Delete(genre).Error
+	return r.db.WithContext(ctx).Unscoped().Delete(genre).Error
 }
 func (r *genreRepository) FindAll(ctx context.Context) ([]entity.Genre, error) {
 	var genres []entity.Genre
@@ -130,6 +130,17 @@ func (r *mediaRepository) FindByID(ctx context.Context, id uint) (*entity.Media,
 		return nil, err
 	}
 	return &media, nil
+}
+func (r *genreRepository) FindByIDs(ctx context.Context, ids []uint) ([]entity.Genre, error) {
+	if len(ids) == 0 {
+		return []entity.Genre{}, nil
+	}
+	var genres []entity.Genre
+	err := r.db.WithContext(ctx).Where("id IN ?", ids).Find(&genres).Error
+	if err != nil {
+		return nil, err
+	}
+	return genres, nil
 }
 func (r *mediaRepository) FindByFilmID(ctx context.Context, filmID uint) ([]entity.Media, error) {
 	var medias []entity.Media

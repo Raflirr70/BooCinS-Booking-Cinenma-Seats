@@ -58,6 +58,10 @@ func SetupRouter(
 			admin.DELETE("/genres/:id", genreHandler.Delete)
 
 			admin.POST("/room", roomHandler.Create)
+			admin.GET("/room", roomHandler.GetAll)
+			admin.PUT("/room/:id", roomHandler.Update)
+			admin.DELETE("/room/:id", roomHandler.Delete)
+			admin.GET("/room/:id", roomHandler.GetWithDetail)
 			// admin.GET("/Media", genreHandler.GetAll)
 			// admin.GET("/genres", genreHandler.GetAll)
 			// admin.GET("/genres", genreHandler.GetAll)

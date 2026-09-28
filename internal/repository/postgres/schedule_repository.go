@@ -74,7 +74,7 @@ func (r *seatRepository) FindByRoom(ctx context.Context, roomID uint) ([]entity.
 }
 func (r *seatRepository) FindByRoomAndRow(ctx context.Context, roomID uint, row string) ([]entity.Seat, error) {
 	var seats []entity.Seat
-	err := r.db.WithContext(ctx).Where("room_id = ? AND row = ?", roomID, row).Order("number ASC").Find(&seats).Error
+	err := r.db.WithContext(ctx).Where("room_id = ? AND label = ?", roomID, row).Order("number ASC").Find(&seats).Error
 	return seats, err
 }
 func (r *seatRepository) WithTx(tx *gorm.DB) repository.SeatRepository {

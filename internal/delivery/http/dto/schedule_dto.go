@@ -15,6 +15,10 @@ type CreateRoomRequest struct {
 	SeatRows SeatRows `json:"seat_rows" binding:"required"`
 }
 type RoomResponse struct {
+	Name     string `json:"name"`
+	Capacity int    `json:"capacity"`
+}
+type RoomWithDetailResponse struct {
 	Name     string        `json:"name"`
 	Capacity int           `json:"capacity"`
 	Seats    []SeatRespone `json:"seat"`
@@ -47,17 +51,30 @@ func ToSeatListResponse(seat *entity.Seat) SeatRespone {
 	}
 }
 
-func ToRoomListResponse(room *entity.Room) RoomResponse {
+func ToRoomResponse(room *entity.Room) RoomResponse {
+	return RoomResponse{
+		Name:     room.Name,
+		Capacity: room.Capacity,
+	}
+}
+func ToRoomListResponse(room []entity.Room) []RoomResponse {
+	rooms := make([]RoomResponse, len(room))
+	for i, room := range room {
+		rooms[i] = ToRoomResponse(&room)
+	}
+	return rooms
+}
+
+func ToRoomWithDetailListResponse(room *entity.Room) RoomWithDetailResponse {
 	seats := make([]SeatRespone, len(room.Seats))
 	for i, seat := range room.Seats {
 		seats[i] = ToSeatListResponse(&seat)
 	}
-	return RoomResponse{
+	return RoomWithDetailResponse{
 		Name:     room.Name,
 		Capacity: room.Capacity,
 		Seats:    seats,
 	}
-
 }
 
 func (m *SeatRows) UnmarshalJSON(data []byte) error {

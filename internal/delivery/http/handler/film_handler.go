@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -45,6 +46,10 @@ func (h *FilmHandler) Create(c *gin.Context) {
 	}
 	film := req.ToEntityFilm()
 	if err := h.filmUC.Create(c.Request.Context(), film); err != nil {
+		if errors.Is(err, usecase.ErrGenreNotFound) {
+			c.JSON(http.StatusBadRequest, response.Error(err.Error()))
+			return
+		}
 		c.JSON(http.StatusInternalServerError, response.Error(err.Error()))
 		return
 	}
@@ -107,6 +112,10 @@ func (h *FilmHandler) Update(c *gin.Context) {
 		film.Status = req.Status
 	}
 	if err := h.filmUC.Update(c.Request.Context(), film, &req.GenreIDs); err != nil {
+		if errors.Is(err, usecase.ErrGenreNotFound) {
+			c.JSON(http.StatusBadRequest, response.Error(err.Error()))
+			return
+		}
 		c.JSON(http.StatusInternalServerError, response.Error(err.Error()))
 		return
 	}
@@ -131,8 +140,7 @@ func (h *FilmHandler) Delete(c *gin.Context) {
 	c.JSON(http.StatusOK, response.Success("film deleted", nil))
 }
 
-//Genre
-
+// Genre
 type GenreHandler struct {
 	genreUC usecase.GenreUsecase
 }

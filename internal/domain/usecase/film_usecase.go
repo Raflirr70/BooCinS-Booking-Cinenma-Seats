@@ -2,9 +2,12 @@ package usecase
 
 import (
 	"context"
+	"errors"
 
 	"github.com/rafli/boocins/internal/domain/entity"
 )
+
+var ErrGenreNotFound = errors.New("one or more genres not found")
 
 type FilmUsecase interface {
 	GetAll(ctx context.Context) ([]entity.Film, error)
@@ -13,6 +16,7 @@ type FilmUsecase interface {
 	GetByID(ctx context.Context, id uint) (*entity.Film, error)
 	Update(ctx context.Context, film *entity.Film, genreIDs *[]uint) error
 	Delete(ctx context.Context, id uint) error
+	ValidateGenreIDs(ctx context.Context, genreIDs []uint) ([]uint, error)
 }
 
 type GenreUsecase interface {

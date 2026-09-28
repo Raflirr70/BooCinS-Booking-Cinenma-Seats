@@ -34,13 +34,13 @@ func main() {
 	authUC := usecase.NewAuthUsecase(userRepo, redisClient, cfg.JWT)
 	authHandler := handler.NewAuthHandler(authUC)
 
-	filmRepo := postgres.NewFilmRepository(db)
-	filmUC := usecase.NewFilmUsecase(filmRepo)
-	filmHandler := handler.NewFilmHandler(filmUC)
-
 	genreRepo := postgres.NewGenreRepository(db)
 	genreUC := usecase.NewGenreUsecase(genreRepo)
 	genreHandler := handler.NewGenreHandler(genreUC)
+
+	filmRepo := postgres.NewFilmRepository(db)
+	filmUC := usecase.NewFilmUsecase(filmRepo, genreRepo)
+	filmHandler := handler.NewFilmHandler(filmUC)
 
 	seatRepo := postgres.NewSeatRepository(db)
 	// seatUC := usecase.NewSeatUsecase(seatRepo)

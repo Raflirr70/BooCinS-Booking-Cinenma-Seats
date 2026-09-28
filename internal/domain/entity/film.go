@@ -16,7 +16,7 @@ type Film struct {
 	Duration    int            `json:"duration" gorm:"not null"`
 	Price       float64        `json:"price" gorm:"type:decimal(12,2);not null"`
 	Status      string         `json:"status" gorm:"type:varchar(20);not null;default:'coming_soon'"`
-	Genres      []Genre        `json:"genres,omitempty" gorm:"many2many:film_genres;"`
+	Genres      []Genre        `json:"genres,omitempty" gorm:"many2many:film_genres;constraint:OnDelete:CASCADE"`
 	Media       []Media        `json:"media,omitempty" gorm:"foreignKey:FilmID"`
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`

@@ -11,11 +11,12 @@ import (
 // FILM
 
 type filmUsecase struct {
-	filmRepo repository.FilmRepository
+	filmRepo  repository.FilmRepository
+	genreRepo repository.GenreRepository
 }
 
-func NewFilmUsecase(filmRepo repository.FilmRepository) uc.FilmUsecase {
-	return &filmUsecase{filmRepo: filmRepo}
+func NewFilmUsecase(filmRepo repository.FilmRepository, genreRepo repository.GenreRepository) uc.FilmUsecase {
+	return &filmUsecase{filmRepo: filmRepo, genreRepo: genreRepo}
 }
 
 func (u *filmUsecase) GetAll(ctx context.Context) ([]entity.Film, error) {
@@ -30,12 +31,21 @@ func (u *filmUsecase) Create(ctx context.Context, film *entity.Film) error {
 	genres := film.Genres
 	film.Genres = nil
 
+	genreIDs := make([]uint, 0, len(genres))
+	for _, g := range genres {
+		genreIDs = append(genreIDs, g.ID)
+	}
+	validIDs, err := u.ValidateGenreIDs(ctx, genreIDs)
+	if err != nil {
+		return err
+	}
+
 	if err := u.filmRepo.Create(ctx, film); err != nil {
 		return err
 	}
 
-	for _, g := range genres {
-		if err := u.filmRepo.AddGenre(ctx, film.ID, g.ID); err != nil {
+	for _, id := range validIDs {
+		if err := u.filmRepo.AddGenre(ctx, film.ID, id); err != nil {
 			return err
 		}
 	}
@@ -48,11 +58,19 @@ func (u *filmUsecase) GetByID(ctx context.Context, id uint) (*entity.Film, error
 }
 
 func (u *filmUsecase) Update(ctx context.Context, film *entity.Film, genreIDs *[]uint) error {
+	var validIDs []uint
+	if genreIDs != nil {
+		var err error
+		validIDs, err = u.ValidateGenreIDs(ctx, *genreIDs)
+		if err != nil {
+			return err
+		}
+	}
 	if err := u.filmRepo.Update(ctx, film); err != nil {
 		return err
 	}
 	if genreIDs != nil {
-		if err := u.filmRepo.ReplaceGenres(ctx, film.ID, *genreIDs); err != nil {
+		if err := u.filmRepo.ReplaceGenres(ctx, film.ID, validIDs); err != nil {
 			return err
 		}
 	}
@@ -62,6 +80,29 @@ func (u *filmUsecase) Update(ctx context.Context, film *entity.Film, genreIDs *[
 func (u *filmUsecase) Delete(ctx context.Context, id uint) error {
 	film := &entity.Film{ID: id}
 	return u.filmRepo.Delete(ctx, film)
+}
+
+func (u *filmUsecase) ValidateGenreIDs(ctx context.Context, genreIDs []uint) ([]uint, error) {
+	seen := make(map[uint]struct{}, len(genreIDs))
+	unique := make([]uint, 0, len(genreIDs))
+	for _, id := range genreIDs {
+		if _, ok := seen[id]; !ok {
+			seen[id] = struct{}{}
+			unique = append(unique, id)
+		}
+	}
+	if len(unique) == 0 {
+		return unique, nil
+	}
+	found, err := u.genreRepo.FindByIDs(ctx, unique)
+	if err != nil {
+		return nil, err
+	}
+	if len(found) != len(unique) {
+		return nil, uc.ErrGenreNotFound
+
+	}
+	return unique, nil
 }
 
 // Genre

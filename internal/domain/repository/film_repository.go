@@ -14,7 +14,7 @@ type FilmRepository interface {
 	FindAll(ctx context.Context) ([]entity.Film, error)
 	FindAllWithDetails(ctx context.Context) ([]entity.Film, error)
 	FindByID(ctx context.Context, id uint) (*entity.Film, error)
-	FindByGenre(ctx context.Context, genre string) ([]entity.Film, error)
+	FindByGenre(ctx context.Context, genreID uint) ([]entity.Film, error)
 
 	AddGenre(ctx context.Context, filmID uint, genreID uint) error
 	RemoveGenre(ctx context.Context, filmID uint, genreID uint) error
@@ -28,6 +28,7 @@ type GenreRepository interface {
 
 	FindAll(ctx context.Context) ([]entity.Genre, error)
 	FindByID(ctx context.Context, id uint) (*entity.Genre, error)
+	FindByIDs(ctx context.Context, ids []uint) ([]entity.Genre, error)
 }
 
 type MediaRepository interface {

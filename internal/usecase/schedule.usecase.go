@@ -24,6 +24,24 @@ func (u roomUsecase) GetAll(ctx context.Context) ([]entity.Room, error) {
 func (u roomUsecase) GetByID(ctx context.Context, id uint) (*entity.Room, error) {
 	return u.roomRepo.FindByID(ctx, id)
 }
+func (u roomUsecase) GetSeats(ctx context.Context, id uint) (*entity.Room, error) {
+	room, err := u.roomRepo.FindByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	seats, err := u.seatRepo.FindByRoom(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	active := make([]entity.Seat, 0, len(seats))
+	for _, seat := range seats {
+		if seat.Status == "active" {
+			active = append(active, seat)
+		}
+	}
+	room.Seats = active
+	return room, nil
+}
 func (u roomUsecase) Create(ctx context.Context, room *entity.Room, seatRows map[string]int) error {
 	return u.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		roomRepo := u.roomRepo.WithTx(tx)
@@ -45,7 +63,12 @@ func (u roomUsecase) Create(ctx context.Context, room *entity.Room, seatRows map
 				}
 			}
 		}
-		return nil
+		active, err := countActiveSeats(ctx, seatRepo, room.ID)
+		if err != nil {
+			return err
+		}
+		room.Capacity = active
+		return roomRepo.Update(ctx, room)
 	})
 }
 func (u roomUsecase) Update(ctx context.Context, room *entity.Room, seatRows map[string]int) error {
@@ -65,6 +88,23 @@ func (u roomUsecase) Update(ctx context.Context, room *entity.Room, seatRows map
 		for row, total := range seatRows {
 			if err := u.UpdateSeats(ctx, seatRepo, room.ID, row, total); err != nil {
 				return err
+			}
+		}
+		// nonaktifkan kursi dari baris yang tidak ada di request
+		keep := make(map[string]struct{}, len(seatRows))
+		for row := range seatRows {
+			keep[row] = struct{}{}
+		}
+		allSeats, err := seatRepo.FindByRoom(ctx, room.ID)
+		if err != nil {
+			return err
+		}
+		for _, seat := range allSeats {
+			if _, ok := keep[seat.Label]; !ok && seat.Status != "inactive" {
+				seat.Status = "inactive"
+				if err := seatRepo.Update(ctx, &seat); err != nil {
+					return err
+				}
 			}
 		}
 		return nil
@@ -114,6 +154,19 @@ func (u roomUsecase) UpdateSeats(ctx context.Context, seatRepo repository.SeatRe
 
 func (u roomUsecase) Delete(ctx context.Context, room *entity.Room) error {
 	return u.roomRepo.Delete(ctx, room)
+}
+func countActiveSeats(ctx context.Context, seatRepo repository.SeatRepository, roomID uint) (int, error) {
+	seats, err := seatRepo.FindByRoom(ctx, roomID)
+	if err != nil {
+		return 0, err
+	}
+	n := 0
+	for _, s := range seats {
+		if s.Status == "active" {
+			n++
+		}
+	}
+	return n, nil
 }
 
 type seatUsecase struct {
