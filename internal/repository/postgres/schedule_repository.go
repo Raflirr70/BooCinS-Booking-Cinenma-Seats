@@ -111,12 +111,12 @@ func (r *scheduleRepository) FindByID(ctx context.Context, id uint) (*entity.Sch
 }
 func (r *scheduleRepository) FindByRoom(ctx context.Context, roomID uint) ([]entity.Schedule, error) {
 	var schedules []entity.Schedule
-	err := r.db.WithContext(ctx).Preload("ScheduleSeat").Where("room_id = ?", roomID).Find(&schedules).Error
+	err := r.db.WithContext(ctx).Preload("Room").Preload("Film").Where("room_id = ?", roomID).Find(&schedules).Error
 	return schedules, err
 }
 func (r *scheduleRepository) FindByFilm(ctx context.Context, filmID uint) ([]entity.Schedule, error) {
 	var schedules []entity.Schedule
-	err := r.db.WithContext(ctx).Preload("ScheduleSeat").Where("film_id = ?", filmID).Find(&schedules).Error
+	err := r.db.WithContext(ctx).Preload("Room").Preload("Film").Where("film_id = ?", filmID).Find(&schedules).Error
 	return schedules, err
 }
 

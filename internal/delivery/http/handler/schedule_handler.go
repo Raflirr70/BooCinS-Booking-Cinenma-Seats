@@ -183,3 +183,39 @@ func (h *ScheduleHandler) GetAll(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.Success("Feched Schedule", res))
 }
+func (h *ScheduleHandler) GetByFilm(c *gin.Context) {
+	filmID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.Error(err.Error()))
+		return
+	}
+	schedule, err := h.scheduleUC.GetByFilm(c.Request.Context(), uint(filmID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, response.Error(err.Error()))
+		return
+	}
+	res := make([]dto.ScheduleAdminResponse, 0, len(schedule))
+	for i := range schedule {
+		item := dto.ToScheduleAdminListResponse(&schedule[i])
+		res = append(res, item)
+	}
+	c.JSON(http.StatusOK, response.Success("fecth schedule film", res))
+}
+func (h *ScheduleHandler) GetByRoom(c *gin.Context) {
+	roomID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.Error(err.Error()))
+		return
+	}
+	schedule, err := h.scheduleUC.GetByRoom(c.Request.Context(), uint(roomID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, response.Error(err.Error()))
+		return
+	}
+	res := make([]dto.ScheduleAdminResponse, 0, len(schedule))
+	for i := range schedule {
+		item := dto.ToScheduleAdminListResponse(&schedule[i])
+		res = append(res, item)
+	}
+	c.JSON(http.StatusOK, response.Success("fecth schedule film", res))
+}

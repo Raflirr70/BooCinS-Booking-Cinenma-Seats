@@ -271,10 +271,28 @@ func (u scheduleUsecase) GetByID(ctx context.Context, id uint) (*entity.Schedule
 	return schedule, nil
 }
 func (u scheduleUsecase) GetByFilm(ctx context.Context, filmID uint) ([]entity.Schedule, error) {
-	return nil, nil
+	schedules, err := u.scheduleRepo.FindByFilm(ctx, filmID)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(schedules) == 0 {
+		return nil, uc.ErrScheduleNotFound
+	}
+
+	return schedules, nil
 }
 func (u scheduleUsecase) GetByRoom(ctx context.Context, roomID uint) ([]entity.Schedule, error) {
-	return nil, nil
+	schedules, err := u.scheduleRepo.FindByRoom(ctx, roomID)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(schedules) == 0 {
+		return nil, uc.ErrScheduleNotFound
+	}
+
+	return schedules, nil
 }
 
 type scheduleSeatUsecase struct {
