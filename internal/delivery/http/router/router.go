@@ -67,6 +67,7 @@ func SetupRouter(
 			// admin.GET("/genres", genreHandler.GetAll)
 			// admin.GET("/genres", genreHandler.GetAll)
 
+			admin.GET("/schedule", scheduleHandler.GetAll)
 			admin.POST("/schedule", scheduleHandler.Create)
 			admin.PUT("/schedule/:id", scheduleHandler.Update)
 			admin.DELETE("/schedule/:id", scheduleHandler.Delete)

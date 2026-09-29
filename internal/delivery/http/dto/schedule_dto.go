@@ -55,6 +55,13 @@ type SeatRespone struct {
 	Number int    `json:"number"`
 	Status string `json:"status"`
 }
+type ScheduleAdminResponse struct {
+	Room     string
+	Film     string
+	ShowDate string
+	ShowTime string
+	Status   bool
+}
 
 func (r *CreateRoomRequest) ToEntityRoom() *entity.Room {
 	return &entity.Room{
@@ -71,6 +78,14 @@ func ToSeatListResponse(seat *entity.Seat) SeatRespone {
 		Label:  seat.Label,
 		Number: seat.Number,
 		Status: seat.Status,
+	}
+}
+func ToScheduleAdminListResponse(schedule *entity.Schedule) ScheduleAdminResponse {
+	return ScheduleAdminResponse{
+		Room:     schedule.Room.Name,
+		Film:     schedule.Film.Title,
+		ShowDate: schedule.ShowDate,
+		ShowTime: schedule.ShowTime,
 	}
 }
 func (r *CreateScheduleRequest) ToEntitySchedule() *entity.Schedule {

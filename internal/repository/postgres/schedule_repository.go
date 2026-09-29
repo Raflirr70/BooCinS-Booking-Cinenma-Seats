@@ -101,7 +101,7 @@ func (r *scheduleRepository) Delete(ctx context.Context, schedule *entity.Schedu
 }
 func (r *scheduleRepository) FindAll(ctx context.Context) ([]entity.Schedule, error) {
 	var schedules []entity.Schedule
-	err := r.db.WithContext(ctx).Preload("ScheduleSeat").Find(&schedules).Error
+	err := r.db.WithContext(ctx).Preload("Room").Preload("Film").Find(&schedules).Error
 	return schedules, err
 }
 func (r *scheduleRepository) FindByID(ctx context.Context, id uint) (*entity.Schedule, error) {

@@ -171,3 +171,15 @@ func (h *ScheduleHandler) Delete(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.Success("Deleted Schedule", nil))
 }
+func (h *ScheduleHandler) GetAll(c *gin.Context) {
+	schedule, err := h.scheduleUC.GetAll(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, response.Error(err.Error()))
+	}
+	res := make([]dto.ScheduleAdminResponse, 0, len(schedule))
+	for i := range schedule {
+		item := dto.ToScheduleAdminListResponse(&schedule[i])
+		res = append(res, item)
+	}
+	c.JSON(http.StatusOK, response.Success("Feched Schedule", res))
+}

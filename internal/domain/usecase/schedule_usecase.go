@@ -35,6 +35,7 @@ type ScheduleUsecase interface {
 	Create(ctx context.Context, schedule *entity.Schedule) error
 	Update(ctx context.Context, schedule *entity.Schedule) error
 	Delete(ctx context.Context, schedule *entity.Schedule) error
+	GetAll(ctx context.Context) ([]entity.Schedule, error)
 	GetByID(ctx context.Context, id uint) (*entity.Schedule, error)
 	GetByFilm(ctx context.Context, filmID uint) ([]entity.Schedule, error)
 	GetByRoom(ctx context.Context, roomID uint) ([]entity.Schedule, error)
