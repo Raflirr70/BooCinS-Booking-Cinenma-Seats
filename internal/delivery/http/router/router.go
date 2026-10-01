@@ -22,6 +22,7 @@ func SetupRouter(
 	api := r.Group("/api/v1")
 	{
 		api.GET("/promo/:id", promoHandler.GetByID)
+		api.POST("/promo", promoHandler.Create)
 		api.PUT("/promo/:id", promoHandler.Update)
 		api.DELETE("/promo/:id", promoHandler.Delete)
 		auth := api.Group("/auth")

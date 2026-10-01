@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"time"
 
 	"github.com/rafli/boocins/internal/domain/entity"
 	"github.com/rafli/boocins/internal/domain/repository"
@@ -27,4 +28,15 @@ func (r *promoRepository) Update(ctx context.Context, promo *entity.Promo) error
 }
 func (r *promoRepository) Delete(ctx context.Context, promo *entity.Promo) error {
 	return r.db.WithContext(ctx).Delete(&promo).Error
+}
+func (r *promoRepository) Create(ctx context.Context, promo *entity.Promo) error {
+	return r.db.WithContext(ctx).Create(&promo).Error
+}
+func (r *promoRepository) FindOverlapping(ctx context.Context, startDate time.Time, endDate time.Time) (*entity.Promo, error) {
+	var promo entity.Promo
+	err := r.db.WithContext(ctx).Where("start_date <= ?", endDate).Where("end_date >= ?", startDate).First(&promo).Error
+	if err != nil {
+		return nil, err
+	}
+	return &promo, nil
 }

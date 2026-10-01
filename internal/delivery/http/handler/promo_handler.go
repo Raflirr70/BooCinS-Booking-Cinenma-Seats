@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -66,4 +67,23 @@ func (h *PromoHandler) Delete(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, response.Success("Deleted Promo", nil))
+}
+func (h *PromoHandler) Create(c *gin.Context) {
+	var req dto.CreatePromoRequest
+	fmt.Print("test")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, response.Error(err.Error()))
+		return
+	}
+	promo, err := req.ToEntityPromo()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, response.Error(err.Error()))
+		return
+	}
+	if err := h.promoUC.Create(c.Request.Context(), promo); err != nil {
+		c.JSON(http.StatusInternalServerError, response.Error(err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, response.Success("Created Promo", nil))
+
 }

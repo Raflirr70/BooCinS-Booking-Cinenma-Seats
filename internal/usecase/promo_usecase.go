@@ -61,3 +61,19 @@ func (u *promoUsecase) Delete(ctx context.Context, promo *entity.Promo) error {
 	}
 	return u.promoRepo.Delete(ctx, promo)
 }
+func (u *promoUsecase) Create(ctx context.Context, promo *entity.Promo) error {
+	if promo == nil {
+		return uc.ErrInvalidPromo
+	}
+	if promo.StartDate.After(promo.EndDate) {
+		return uc.ErrInvalidPromoDate
+	}
+	_, err := u.promoRepo.FindOverlapping(ctx, promo.StartDate, promo.EndDate)
+	if err == nil {
+		return uc.ErrPromoDateConflict
+	}
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil
+	}
+	return u.promoRepo.Create(ctx, promo)
+}

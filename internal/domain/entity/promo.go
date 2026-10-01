@@ -14,8 +14,8 @@ type Promo struct {
 	Price       *float64       `json:"price" gorm:"type:decimal(12,2)"`
 	Discount    float64        `json:"discount" gorm:"type:decimal(5,2);default:0.00"`
 	IsActive    bool           `json:"is_active" gorm:"not null;default:true"`
-	StartDate   *string        `json:"start_date" gorm:"type:date"`
-	EndDate     *string        `json:"end_date" gorm:"type:date"`
+	StartDate   time.Time      `json:"start_date" gorm:"type:date;not null"`
+	EndDate     time.Time      `json:"end_date" gorm:"type:date;not null"`
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`
 	DeletedAt   gorm.DeletedAt `json:"-" gorm:"index"`
