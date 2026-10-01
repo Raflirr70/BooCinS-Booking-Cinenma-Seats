@@ -33,6 +33,7 @@ func (h *PromoHandler) Update(c *gin.Context) {
 
 	if err := h.promoUC.Update(c.Request.Context(), promo); err != nil {
 		c.JSON(http.StatusInternalServerError, response.Error(err.Error()))
+		return
 	}
 	c.JSON(http.StatusOK, response.Success("Updated Promo", nil))
 }
@@ -45,6 +46,24 @@ func (h *PromoHandler) GetByID(c *gin.Context) {
 	promo, err := h.promoUC.GetByID(c.Request.Context(), uint(id))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, response.Error(err.Error()))
+		return
 	}
 	c.JSON(http.StatusOK, response.Success("fetch promo", dto.ToPromoResponse(promo)))
+}
+func (h *PromoHandler) Delete(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.Error(err.Error()))
+		return
+	}
+	promo, err := h.promoUC.GetByID(c.Request.Context(), uint(id))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, response.Error(err.Error()))
+		return
+	}
+	if err := h.promoUC.Delete(c.Request.Context(), promo); err != nil {
+		c.JSON(http.StatusInternalServerError, response.Error(err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, response.Success("Deleted Promo", nil))
 }

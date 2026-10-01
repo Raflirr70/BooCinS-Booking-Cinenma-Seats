@@ -1,19 +1,24 @@
 package entity
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Promo struct {
-	ID          uint      `json:"id" gorm:"primaryKey"`
-	Title       string    `json:"title" gorm:"type:varchar(255);not null"`
-	Description string    `json:"description" gorm:"type:text"`
-	ImageURL    string    `json:"image_url" gorm:"type:text"`
-	Price       *float64  `json:"price" gorm:"type:decimal(12,2)"`
-	Discount    float64   `json:"discount" gorm:"type:decimal(5,2);default:0.00"`
-	IsActive    bool      `json:"is_active" gorm:"not null;default:true"`
-	StartDate   *string   `json:"start_date" gorm:"type:date"`
-	EndDate     *string   `json:"end_date" gorm:"type:date"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID          uint           `json:"id" gorm:"primaryKey"`
+	Title       string         `json:"title" gorm:"type:varchar(255);not null"`
+	Description string         `json:"description" gorm:"type:text"`
+	ImageURL    string         `json:"image_url" gorm:"type:text"`
+	Price       *float64       `json:"price" gorm:"type:decimal(12,2)"`
+	Discount    float64        `json:"discount" gorm:"type:decimal(5,2);default:0.00"`
+	IsActive    bool           `json:"is_active" gorm:"not null;default:true"`
+	StartDate   *string        `json:"start_date" gorm:"type:date"`
+	EndDate     *string        `json:"end_date" gorm:"type:date"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	DeletedAt   gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
 type AuditLog struct {

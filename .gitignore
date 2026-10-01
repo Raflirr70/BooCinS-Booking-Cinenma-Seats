@@ -1,3 +1,6 @@
+# air
+*.air.toml
+
 # Binaries
 *.exe
 *.exe~

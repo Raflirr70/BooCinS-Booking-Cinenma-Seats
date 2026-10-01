@@ -9,4 +9,7 @@ import (
 type PromoRepository interface {
 	GetByID(ctx context.Context, id uint) (*entity.Promo, error)
 	Update(ctx context.Context, promo *entity.Promo) error
+	Delete(ctx context.Context, promo *entity.Promo) error
+
+	
 }

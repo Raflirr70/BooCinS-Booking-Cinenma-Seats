@@ -25,3 +25,6 @@ func (r *promoRepository) GetByID(ctx context.Context, id uint) (*entity.Promo, 
 func (r *promoRepository) Update(ctx context.Context, promo *entity.Promo) error {
 	return r.db.WithContext(ctx).Where("id = ?", promo.ID).Updates(&promo).Error
 }
+func (r *promoRepository) Delete(ctx context.Context, promo *entity.Promo) error {
+	return r.db.WithContext(ctx).Delete(&promo).Error
+}
