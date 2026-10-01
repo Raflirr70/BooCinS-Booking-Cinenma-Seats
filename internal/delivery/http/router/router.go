@@ -14,6 +14,7 @@ func SetupRouter(
 	roomHandler *handler.RoomHandler,
 	scheduleHandler *handler.ScheduleHandler,
 	promoHandler *handler.PromoHandler,
+	homeHandler *handler.HomeHandler,
 	jwtSecret string,
 	redisClient *redis.Client,
 ) *gin.Engine {
@@ -21,6 +22,7 @@ func SetupRouter(
 
 	api := r.Group("/api/v1")
 	{
+		api.GET("/home", homeHandler.GetHome)
 		auth := api.Group("/auth")
 		{
 			auth.POST("/register", authHandler.Register)

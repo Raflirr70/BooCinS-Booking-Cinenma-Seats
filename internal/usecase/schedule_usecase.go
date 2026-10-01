@@ -306,7 +306,14 @@ func (u scheduleSeatUsecase) Create(ctx context.Context, ss *entity.ScheduleSeat
 func (u scheduleSeatUsecase) Update(ctx context.Context, ss *entity.ScheduleSeat) error { return nil }
 func (u scheduleSeatUsecase) Delete(ctx context.Context, ss *entity.ScheduleSeat) error { return nil }
 func (u scheduleSeatUsecase) GetBySchedule(ctx context.Context, scheduleID uint) ([]entity.ScheduleSeat, error) {
-	return nil, nil
+	ss, err := u.scheduleSeatRepo.FindBySchedule(ctx, scheduleID)
+	if err != nil {
+		return nil, err
+	}
+	if len(ss) == 0 {
+		return nil, err
+	}
+	return ss, nil
 }
 func (u scheduleSeatUsecase) GetByID(ctx context.Context, id uint) (*entity.ScheduleSeat, error) {
 	return nil, nil

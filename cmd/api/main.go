@@ -54,9 +54,14 @@ func main() {
 	ScheduleUC := usecase.NewScheduleUsecase(ScheduleRepo, filmRepo, roomRepo)
 	ScheduleHandler := handler.NewScheduleHandler(ScheduleUC)
 
+	scheduleSeatRepo := postgres.NewScheduleSeatRepository(db)
+	scheduleSeatUC := usecase.NewScheduleSeatUsecase(scheduleSeatRepo)
+
 	promoRepo := postgres.NewPromoRepository(db)
 	promoUC := usecase.NewPromoUsecase(promoRepo)
 	promoHandler := handler.NewPromoHandler(promoUC)
+
+	homeHandler := handler.NewHomeHandler(authUC, filmUC, ScheduleUC, scheduleSeatUC, promoUC)
 
 	r := router.SetupRouter(
 		authHandler,
@@ -65,6 +70,7 @@ func main() {
 		roomHandler,
 		ScheduleHandler,
 		promoHandler,
+		homeHandler,
 		cfg.JWT.Secret,
 		redisClient,
 	)
