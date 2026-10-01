@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -9,6 +10,7 @@ import (
 	"github.com/rafli/boocins/internal/delivery/http/dto"
 	"github.com/rafli/boocins/internal/domain/entity"
 	"github.com/rafli/boocins/internal/domain/usecase"
+	uc "github.com/rafli/boocins/internal/domain/usecase"
 	"github.com/rafli/boocins/pkg/response"
 )
 
@@ -85,5 +87,16 @@ func (h *PromoHandler) Create(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, response.Success("Created Promo", nil))
-
+}
+func (h *PromoHandler) GetCurrent(c *gin.Context) {
+	promo, err := h.promoUC.GetPromo(c.Request.Context())
+	if err != nil {
+		if errors.Is(err, uc.ErrPromoNotFound) {
+			c.JSON(http.StatusNotFound, response.Error("Promo not Found"))	
+			return
+		}
+		c.JSON(http.StatusInternalServerError, response.Error(err.Error()))
+		return
+	}
+	c.JSON(http.StatusOK, response.Success("fetch promo", dto.ToPromoResponse(promo)))
 }

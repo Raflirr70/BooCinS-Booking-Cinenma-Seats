@@ -77,3 +77,13 @@ func (u *promoUsecase) Create(ctx context.Context, promo *entity.Promo) error {
 	}
 	return u.promoRepo.Create(ctx, promo)
 }
+func (u *promoUsecase) GetPromo(ctx context.Context) (*entity.Promo, error) {
+	promo, err := u.promoRepo.GetCurrent(ctx)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, uc.ErrPromoNotFound
+		}
+		return nil, err
+	}
+	return promo, nil
+}

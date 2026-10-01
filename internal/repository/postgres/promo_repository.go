@@ -40,3 +40,10 @@ func (r *promoRepository) FindOverlapping(ctx context.Context, startDate time.Ti
 	}
 	return &promo, nil
 }
+func (r *promoRepository) GetCurrent(ctx context.Context) (*entity.Promo, error) {
+	var promo *entity.Promo
+	if err := r.db.WithContext(ctx).Where("start_date <= CURRENT_DATE").Where("end_date >= CURRENT_DATE").First(&promo).Error; err != nil {
+		return nil, err
+	}
+	return promo, nil
+}

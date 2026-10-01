@@ -21,10 +21,6 @@ func SetupRouter(
 
 	api := r.Group("/api/v1")
 	{
-		api.GET("/promo/:id", promoHandler.GetByID)
-		api.POST("/promo", promoHandler.Create)
-		api.PUT("/promo/:id", promoHandler.Update)
-		api.DELETE("/promo/:id", promoHandler.Delete)
 		auth := api.Group("/auth")
 		{
 			auth.POST("/register", authHandler.Register)
@@ -78,6 +74,12 @@ func SetupRouter(
 			admin.DELETE("/schedule/:id", scheduleHandler.Delete)
 			admin.GET("/schedule/:id/film", scheduleHandler.GetByFilm)
 			admin.GET("/schedule/:id/room", scheduleHandler.GetByRoom)
+
+			api.POST("/promo", promoHandler.Create)
+			api.GET("/promo", promoHandler.GetCurrent)
+			api.GET("/promo/:id", promoHandler.GetByID)
+			api.PUT("/promo/:id", promoHandler.Update)
+			api.DELETE("/promo/:id", promoHandler.Delete)
 		}
 	}
 

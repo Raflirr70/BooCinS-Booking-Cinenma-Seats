@@ -22,4 +22,5 @@ type PromoUsecase interface {
 	Delete(ctx context.Context, promo *entity.Promo) error
 
 	Create(ctx context.Context, promo *entity.Promo) error
+	GetPromo(ctx context.Context) (*entity.Promo, error)
 }
