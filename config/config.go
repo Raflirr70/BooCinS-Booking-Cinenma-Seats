@@ -12,6 +12,7 @@ type Config struct {
 	Redis    RedisConfig
 	JWT      JWTConfig
 	Kafka    KafkaConfig
+	Midtrans MidtransConfig
 }
 
 type ServerConfig struct {
@@ -44,10 +45,17 @@ type KafkaConfig struct {
 	GroupID string
 }
 
+type MidtransConfig struct {
+	ServerKey    string
+	ClientKey    string
+	IsProduction bool
+}
+
 func LoadConfig() *Config {
 	dbPort, _ := strconv.Atoi(getEnv("DB_PORT", "5432"))
 	redisDB, _ := strconv.Atoi(getEnv("REDIS_DB", "0"))
 	jwtExpHours, _ := strconv.Atoi(getEnv("JWT_EXPIRATION_HOURS", "24"))
+	isProd, _ := strconv.ParseBool(getEnv("MIDTRANS_IS_PRODUCTION", "false"))
 
 	return &Config{
 		Server: ServerConfig{
@@ -74,6 +82,11 @@ func LoadConfig() *Config {
 		Kafka: KafkaConfig{
 			Brokers: []string{getEnv("KAFKA_BROKER", "localhost:9092")},
 			GroupID: getEnv("KAFKA_GROUP_ID", "boocins-group"),
+		},
+		Midtrans: MidtransConfig{
+			ServerKey:    getEnv("MIDTRANS_SERVER_KEY", ""),
+			ClientKey:    getEnv("MIDTRANS_CLIENT_KEY", ""),
+			IsProduction: isProd,
 		},
 	}
 }
