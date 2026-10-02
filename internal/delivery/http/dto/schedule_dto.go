@@ -62,6 +62,25 @@ type ScheduleAdminResponse struct {
 	ShowTime string
 	Status   bool
 }
+type ScheduleSeatDetailResponse struct {
+	ScheduleID     uint             `json:"schedule_id"`
+	ShowDate       string           `json:"show_date"`
+	ShowTime       string           `json:"show_time"`
+	RoomName       string           `json:"room_name"`
+	TotalSeats     int              `json:"total_seats"`
+	AvailableSeats int              `json:"available_seats"`
+	BookedSeats    int              `json:"booked_seats"`
+	Seats          []SeatItemDetail `json:"seats"`
+}
+
+type SeatItemDetail struct {
+	SeatID         uint   `json:"seat_id"`
+	ScheduleSeatID *uint  `json:"schedule_seat_id"`
+	Label          string `json:"label"`
+	Number         int    `json:"number"`
+	Status         string `json:"status"`
+	IsAvailable    bool   `json:"is_available"`
+}
 
 func (r *CreateRoomRequest) ToEntityRoom() *entity.Room {
 	return &entity.Room{

@@ -19,13 +19,7 @@ type HomeHandler struct {
 	promoUC        usecase.PromoUsecase
 }
 
-func NewHomeHandler(
-	authUC usecase.AuthUsecase,
-	filmUC usecase.FilmUsecase,
-	scheduleUC usecase.ScheduleUsecase,
-	scheduleSeatUC usecase.ScheduleSeatUsecase,
-	promoUC usecase.PromoUsecase,
-) *HomeHandler {
+func NewHomeHandler(authUC usecase.AuthUsecase, filmUC usecase.FilmUsecase, scheduleUC usecase.ScheduleUsecase, scheduleSeatUC usecase.ScheduleSeatUsecase, promoUC usecase.PromoUsecase) *HomeHandler {
 	return &HomeHandler{
 		authUC:         authUC,
 		filmUC:         filmUC,
@@ -164,4 +158,46 @@ func (h *HomeHandler) GetDetailFilms(c *gin.Context) {
 	// 6. Response via DTO
 	res := dto.ToHalamanDetailFilm(user, film, schedules, scheduleSeats)
 	c.JSON(http.StatusOK, response.Success("home fetched", res))
+}
+func (h *HomeHandler) GetScheduleMapSeats(c *gin.Context) {
+	ctx := c.Request.Context()
+	scheduleID, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, response.Error("invalid schedule id"))
+		return
+	}
+
+	// 1. Ambil data User (opsional)
+	var user *entity.User
+	if v, exists := c.Get("user_id"); exists {
+		if id, ok := v.(uint); ok && id > 0 {
+			u, err := h.authUC.GetProfile(ctx, id)
+			if err == nil {
+				user = u
+			}
+		}
+	}
+
+	// 2. Ambil data Schedule berdasarkan ID
+	schedule, err := h.scheduleUC.GetByID(ctx, uint(scheduleID))
+	if err != nil {
+		c.JSON(http.StatusNotFound, response.Error("schedule not found"))
+		return
+	}
+
+	// 3. Ambil data Film lengkap
+	film, err := h.filmUC.GetByID(ctx, schedule.FilmID)
+	if err != nil {
+		film = &schedule.Film
+	}
+
+	// 4. Ambil data ScheduleSeat yang sudah dipesan/diqueri
+	seats, err := h.scheduleSeatUC.GetBySchedule(ctx, uint(scheduleID))
+	if err != nil {
+		seats = []entity.ScheduleSeat{}
+	}
+
+	// 5. Mapping DTO via page_dto.go
+	res := dto.ToHalamanScheduleMapSeat(user, schedule, film, seats)
+	c.JSON(http.StatusOK, response.Success("schedule seats fetched", res))
 }

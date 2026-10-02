@@ -23,6 +23,7 @@ func SetupRouter(
 	api := r.Group("/api/v1")
 	{
 		api.GET("/home", homeHandler.GetHome)
+		api.GET("/schedules/:id/seats", homeHandler.GetScheduleMapSeats)
 		auth := api.Group("/auth")
 		{
 			auth.POST("/register", authHandler.Register)

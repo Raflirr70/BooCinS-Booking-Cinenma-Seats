@@ -197,6 +197,7 @@ func (u seatUsecase) Delete(ctx context.Context, seat *entity.Seat) error {
 
 type scheduleUsecase struct {
 	scheduleRepo repository.ScheduleRepository
+	ss           repository.ScheduleSeatRepository
 	filmRepo     repository.FilmRepository
 	roomRepo     repository.RoomRepository
 }

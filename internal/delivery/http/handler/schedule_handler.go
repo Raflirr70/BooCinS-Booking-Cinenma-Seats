@@ -19,7 +19,6 @@ type RoomHandler struct {
 func NewRoomHandler(roomUC usecase.RoomUsecase) *RoomHandler {
 	return &RoomHandler{roomUC: roomUC}
 }
-
 func (h *RoomHandler) Create(c *gin.Context) {
 	var req dto.CreateRoomRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -33,7 +32,6 @@ func (h *RoomHandler) Create(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, response.Success("room create", room))
 }
-
 func (h *RoomHandler) GetAll(c *gin.Context) {
 	rooms, err := h.roomUC.GetAll(c.Request.Context())
 	if err != nil {
@@ -41,7 +39,6 @@ func (h *RoomHandler) GetAll(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.Success("Room feched", dto.ToRoomListResponse(rooms)))
 }
-
 func (h *RoomHandler) GetWithDetail(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -59,7 +56,6 @@ func (h *RoomHandler) GetWithDetail(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.Success("seats fetched", dto.ToRoomWithDetailListResponse(room)))
 }
-
 func (h *RoomHandler) Update(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {

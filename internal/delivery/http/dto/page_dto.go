@@ -28,6 +28,13 @@ type HalamanDetailFilmResponse struct {
 	Film   *FilmDetailResponse `json:"film"`
 }
 
+type HalamanScheduleMapSeatResponse struct {
+	UserID   uint                       `json:"user_id"`
+	Name     string                     `json:"name"`
+	Film     FilmDetailResponse         `json:"film"`
+	Schedule ScheduleSeatDetailResponse `json:"schedule"`
+}
+
 type PromoHomeResponse struct {
 	ID          uint   `json:"id"`
 	Title       string `json:"title"`
@@ -185,4 +192,68 @@ func ToPromoHomeResponse(promo *entity.Promo) *PromoHomeResponse {
 		Description: promo.Description,
 		ImageURL:    promo.ImageURL,
 	}
+}
+func ToHalamanScheduleMapSeat(
+	user *entity.User,
+	schedule *entity.Schedule,
+	film *entity.Film,
+	scheduleSeats []entity.ScheduleSeat,
+) HalamanScheduleMapSeatResponse {
+	existingSeatsMap := make(map[uint]entity.ScheduleSeat, len(scheduleSeats))
+	for _, ss := range scheduleSeats {
+		existingSeatsMap[ss.SeatID] = ss
+	}
+
+	seatsDetail := make([]SeatItemDetail, 0, len(schedule.Room.Seats))
+	bookedCount := 0
+
+	for _, seat := range schedule.Room.Seats {
+		item := SeatItemDetail{
+			SeatID:      seat.ID,
+			Label:       seat.Label,
+			Number:      seat.Number,
+			Status:      "available",
+			IsAvailable: true,
+		}
+
+		if ss, exists := existingSeatsMap[seat.ID]; exists {
+			item.ScheduleSeatID = &ss.ID
+			item.Status = ss.Status
+			if ss.Status != "available" || ss.LockedAt != nil {
+				item.IsAvailable = false
+				bookedCount++
+			}
+		}
+		seatsDetail = append(seatsDetail, item)
+	}
+
+	totalSeats := len(schedule.Room.Seats)
+	if totalSeats == 0 {
+		totalSeats = schedule.Room.Capacity
+	}
+	availableSeats := totalSeats - bookedCount
+	if availableSeats < 0 {
+		availableSeats = 0
+	}
+
+	res := HalamanScheduleMapSeatResponse{
+		Film: ToFilmDetailResponse(film),
+		Schedule: ScheduleSeatDetailResponse{
+			ScheduleID:     schedule.ID,
+			ShowDate:       schedule.ShowDate,
+			ShowTime:       schedule.ShowTime,
+			RoomName:       schedule.Room.Name,
+			TotalSeats:     totalSeats,
+			AvailableSeats: availableSeats,
+			BookedSeats:    bookedCount,
+			Seats:          seatsDetail,
+		},
+	}
+
+	if user != nil {
+		res.UserID = user.ID
+		res.Name = strings.TrimSpace(user.FirstName + " " + user.LastName)
+	}
+
+	return res
 }

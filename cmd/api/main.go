@@ -50,12 +50,12 @@ func main() {
 	roomUC := usecase.NewRoomUsecase(roomRepo, seatRepo, db)
 	roomHandler := handler.NewRoomHandler(roomUC)
 
+	scheduleSeatRepo := postgres.NewScheduleSeatRepository(db)
+	scheduleSeatUC := usecase.NewScheduleSeatUsecase(scheduleSeatRepo)
+
 	ScheduleRepo := postgres.NewScheduleRepository(db)
 	ScheduleUC := usecase.NewScheduleUsecase(ScheduleRepo, filmRepo, roomRepo)
 	ScheduleHandler := handler.NewScheduleHandler(ScheduleUC)
-
-	scheduleSeatRepo := postgres.NewScheduleSeatRepository(db)
-	scheduleSeatUC := usecase.NewScheduleSeatUsecase(scheduleSeatRepo)
 
 	promoRepo := postgres.NewPromoRepository(db)
 	promoUC := usecase.NewPromoUsecase(promoRepo)

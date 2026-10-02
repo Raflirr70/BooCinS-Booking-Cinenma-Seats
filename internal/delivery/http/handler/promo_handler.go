@@ -92,7 +92,7 @@ func (h *PromoHandler) GetCurrent(c *gin.Context) {
 	promo, err := h.promoUC.GetPromo(c.Request.Context())
 	if err != nil {
 		if errors.Is(err, uc.ErrPromoNotFound) {
-			c.JSON(http.StatusNotFound, response.Error("Promo not Found"))	
+			c.JSON(http.StatusNotFound, response.Error("Promo not Found"))
 			return
 		}
 		c.JSON(http.StatusInternalServerError, response.Error(err.Error()))

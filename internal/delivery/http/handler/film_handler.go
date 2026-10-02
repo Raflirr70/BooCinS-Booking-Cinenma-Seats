@@ -19,7 +19,6 @@ type FilmHandler struct {
 func NewFilmHandler(filmUC usecase.FilmUsecase) *FilmHandler {
 	return &FilmHandler{filmUC: filmUC}
 }
-
 func (h *FilmHandler) GetAll(c *gin.Context) {
 	films, err := h.filmUC.GetAll(c.Request.Context())
 	if err != nil {
@@ -28,7 +27,6 @@ func (h *FilmHandler) GetAll(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.Success("films fetched", dto.ToFilmListResponses(films)))
 }
-
 func (h *FilmHandler) GetAllWithDetails(c *gin.Context) {
 	films, err := h.filmUC.GetAllWithDetails(c.Request.Context())
 	if err != nil {
@@ -37,7 +35,6 @@ func (h *FilmHandler) GetAllWithDetails(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.Success("films fetched", dto.ToFilmDetailResponses(films)))
 }
-
 func (h *FilmHandler) Create(c *gin.Context) {
 	var req dto.CreateFilmRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -60,7 +57,6 @@ func (h *FilmHandler) Create(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, response.Success("film created", dto.ToFilmDetailResponse(created)))
 }
-
 func (h *FilmHandler) GetByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -74,7 +70,6 @@ func (h *FilmHandler) GetByID(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.Success("film fetched", dto.ToFilmDetailResponse(film)))
 }
-
 func (h *FilmHandler) Update(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -126,7 +121,6 @@ func (h *FilmHandler) Update(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.Success("film updated", dto.ToFilmDetailResponse(updated)))
 }
-
 func (h *FilmHandler) Delete(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -148,7 +142,6 @@ type GenreHandler struct {
 func NewGenreHandler(genreUC usecase.GenreUsecase) *GenreHandler {
 	return &GenreHandler{genreUC: genreUC}
 }
-
 func (h *GenreHandler) GetAll(c *gin.Context) {
 	genres, err := h.genreUC.GetAll(c.Request.Context())
 	if err != nil {
@@ -157,7 +150,6 @@ func (h *GenreHandler) GetAll(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.Success("genres fetched", dto.ToGenreResponses(genres)))
 }
-
 func (h *GenreHandler) GetByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -185,7 +177,6 @@ func (h *GenreHandler) Create(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, response.Success("genre created", dto.ToGenreResponse(genre)))
 }
-
 func (h *GenreHandler) Update(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -211,7 +202,6 @@ func (h *GenreHandler) Update(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.Success("genre updated", dto.ToGenreResponse(genre)))
 }
-
 func (h *GenreHandler) Delete(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -239,7 +229,6 @@ type MediaHandler struct {
 func NewMediaHandler(mediaUC usecase.MediaUsecase) *MediaHandler {
 	return &MediaHandler{mediaUC: mediaUC}
 }
-
 func (h *MediaHandler) GetByFilm(c *gin.Context) {
 	filmID, err := strconv.ParseUint(c.Param("film_id"), 10, 32)
 	if err != nil {
@@ -253,7 +242,6 @@ func (h *MediaHandler) GetByFilm(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.Success("medias fetched", dto.ToMediaResponses(medias)))
 }
-
 func (h *MediaHandler) GetByID(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -267,7 +255,6 @@ func (h *MediaHandler) GetByID(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.Success("media fetched", dto.ToMediaResponse(media)))
 }
-
 func (h *MediaHandler) Update(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -296,7 +283,6 @@ func (h *MediaHandler) Update(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, response.Success("media updated", dto.ToMediaResponse(media)))
 }
-
 func (h *MediaHandler) Delete(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {

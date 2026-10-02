@@ -105,9 +105,12 @@ func (r *scheduleRepository) FindAll(ctx context.Context) ([]entity.Schedule, er
 	return schedules, err
 }
 func (r *scheduleRepository) FindByID(ctx context.Context, id uint) (*entity.Schedule, error) {
-	var schedule *entity.Schedule
-	err := r.db.WithContext(ctx).Where("id = ?", id).First(&schedule).Error
-	return schedule, err
+	var schedule entity.Schedule
+	err := r.db.WithContext(ctx).Preload("Film").Preload("Room.Seats").Where("id = ?", id).First(&schedule).Error
+	if err != nil {
+		return nil, err
+	}
+	return &schedule, nil
 }
 func (r *scheduleRepository) FindByRoom(ctx context.Context, roomID uint) ([]entity.Schedule, error) {
 	var schedules []entity.Schedule
@@ -145,6 +148,6 @@ func (r *scheduleSeatRepository) FindByID(ctx context.Context, id uint) (*entity
 }
 func (r *scheduleSeatRepository) FindBySchedule(ctx context.Context, scheduleID uint) ([]entity.ScheduleSeat, error) {
 	var scheduleSeats []entity.ScheduleSeat
-	err := r.db.WithContext(ctx).Find(&scheduleSeats).Error
+	err := r.db.WithContext(ctx).Where("schedule_id = ?", scheduleID).Find(&scheduleSeats).Error
 	return scheduleSeats, err
 }
