@@ -32,7 +32,7 @@ func SetupRouter(
 		// Public film routes
 		films := api.Group("/films")
 		{
-			films.GET("", filmHandler.GetAllWithDetails)
+			films.GET("", homeHandler.GetFilms)
 			films.GET("/:id", filmHandler.GetByID)
 		}
 

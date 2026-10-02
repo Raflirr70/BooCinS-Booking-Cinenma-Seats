@@ -6,11 +6,26 @@ import (
 	"github.com/rafli/boocins/internal/domain/entity"
 )
 
+// Halaman Utama
 type HalamanUtamaResponse struct {
-	UserID   uint               `json:"user_id"`
-	Username string             `json:"username"`
-	Promo    *PromoHomeResponse `json:"promo"`
-	Films    []FilmHomeResponse `json:"films"`
+	UserID uint               `json:"user_id"`
+	Name   string             `json:"name"`
+	Promo  *PromoHomeResponse `json:"promo"`
+	Films  []FilmHomeResponse `json:"films"`
+}
+
+// Halaman List Film
+type HalamanListFilmResponse struct {
+	UserID uint               `json:"user_id"`
+	Name   string             `json:"name"`
+	Films  []FilmHomeResponse `json:"films"`
+}
+
+// Halaman Detaul Films
+type HalamanDetailFilmResponse struct {
+	UserID uint                `json:"user_id"`
+	Name   string              `json:"name"`
+	Film   *FilmDetailResponse `json:"film"`
 }
 
 type PromoHomeResponse struct {
@@ -55,7 +70,24 @@ func ToHomeResponse(user *entity.User, promo *entity.Promo, films []entity.Film,
 
 	if user != nil {
 		res.UserID = user.ID
-		res.Username = strings.TrimSpace(user.FirstName + " " + user.LastName)
+		res.Name = strings.TrimSpace(user.FirstName + " " + user.LastName)
+	}
+
+	return res
+}
+func ToHalamanListFilm(user *entity.User, films []entity.Film, schedules []entity.Schedule, scheduleSeats map[uint][]entity.ScheduleSeat) HalamanListFilmResponse {
+	schedulesByFilm := make(map[uint][]entity.Schedule, len(films))
+	for i := range schedules {
+		schedulesByFilm[schedules[i].FilmID] = append(schedulesByFilm[schedules[i].FilmID], schedules[i])
+	}
+
+	res := HalamanListFilmResponse{
+		Films: toHomeFilmResponses(films, schedulesByFilm, scheduleSeats),
+	}
+
+	if user != nil {
+		res.UserID = user.ID
+		res.Name = strings.TrimSpace(user.FirstName + " " + user.LastName)
 	}
 
 	return res
