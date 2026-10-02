@@ -33,7 +33,7 @@ func SetupRouter(
 		films := api.Group("/films")
 		{
 			films.GET("", homeHandler.GetFilms)
-			films.GET("/:id", filmHandler.GetByID)
+			films.GET("/:id", homeHandler.GetDetailFilms)
 		}
 
 		// Protected routes

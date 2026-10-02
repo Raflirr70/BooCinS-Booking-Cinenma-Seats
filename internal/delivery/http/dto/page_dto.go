@@ -92,6 +92,31 @@ func ToHalamanListFilm(user *entity.User, films []entity.Film, schedules []entit
 
 	return res
 }
+func ToHalamanDetailFilm(user *entity.User, film *entity.Film, schedules []entity.Schedule, scheduleSeats map[uint][]entity.ScheduleSeat) HalamanDetailFilmResponse {
+	var filmResp *FilmDetailResponse
+
+	if film != nil {
+		detail := ToFilmDetailResponse(film)
+
+		scheduleResponses := make([]ScheduleHomeResponse, 0, len(schedules))
+		for i := range schedules {
+			scheduleResponses = append(scheduleResponses, toHomeScheduleResponse(&schedules[i], scheduleSeats[schedules[i].ID]))
+		}
+		detail.Schedule = scheduleResponses
+		filmResp = &detail
+	}
+
+	res := HalamanDetailFilmResponse{
+		Film: filmResp,
+	}
+
+	if user != nil {
+		res.UserID = user.ID
+		res.Name = strings.TrimSpace(user.FirstName + " " + user.LastName)
+	}
+
+	return res
+}
 func toHomeFilmResponses(films []entity.Film, schedulesByFilm map[uint][]entity.Schedule, scheduleSeats map[uint][]entity.ScheduleSeat) []FilmHomeResponse {
 	results := make([]FilmHomeResponse, 0, len(films))
 	for i := range films {

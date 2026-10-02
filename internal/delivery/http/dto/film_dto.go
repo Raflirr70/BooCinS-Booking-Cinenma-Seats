@@ -57,17 +57,18 @@ type FilmListResponse struct {
 
 // FilmDetailResponse — untuk visitor (lengkap)
 type FilmDetailResponse struct {
-	ID          uint            `json:"id"`
-	Title       string          `json:"title"`
-	Cover       string          `json:"cover"`
-	Synopsis    string          `json:"synopsis"`
-	Description string          `json:"description"`
-	Director    string          `json:"director"`
-	Duration    int             `json:"duration"`
-	Price       float64         `json:"price"`
-	Status      string          `json:"status"`
-	Genres      []GenreResponse `json:"genres"`
-	Media       []MediaResponse `json:"media"`
+	ID          uint                   `json:"id"`
+	Title       string                 `json:"title"`
+	Cover       string                 `json:"cover"`
+	Synopsis    string                 `json:"synopsis"`
+	Description string                 `json:"description"`
+	Director    string                 `json:"director"`
+	Duration    int                    `json:"duration"`
+	Price       float64                `json:"price"`
+	Status      string                 `json:"status"`
+	Genres      []GenreResponse        `json:"genres"`
+	Media       []MediaResponse        `json:"media"`
+	Schedule    []ScheduleHomeResponse `json:"schedule"`
 }
 type GenreResponse struct {
 	ID   uint   `json:"id"`
