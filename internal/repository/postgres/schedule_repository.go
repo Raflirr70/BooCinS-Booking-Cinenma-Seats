@@ -2,10 +2,12 @@ package postgres
 
 import (
 	"context"
+	"time"
 
 	"github.com/rafli/boocins/internal/domain/entity"
 	"github.com/rafli/boocins/internal/domain/repository"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type roomRepository struct {
@@ -122,6 +124,9 @@ func (r *scheduleRepository) FindByFilm(ctx context.Context, filmID uint) ([]ent
 	err := r.db.WithContext(ctx).Preload("Room").Preload("Film").Where("film_id = ?", filmID).Find(&schedules).Error
 	return schedules, err
 }
+func (r *scheduleRepository) WithTx(tx *gorm.DB) repository.ScheduleRepository {
+	return &scheduleRepository{db: tx}
+}
 
 // ============================ ScheduleSeats ============================
 
@@ -150,4 +155,35 @@ func (r *scheduleSeatRepository) FindBySchedule(ctx context.Context, scheduleID 
 	var scheduleSeats []entity.ScheduleSeat
 	err := r.db.WithContext(ctx).Where("schedule_id = ?", scheduleID).Find(&scheduleSeats).Error
 	return scheduleSeats, err
+}
+func (r *scheduleSeatRepository) WithTx(tx *gorm.DB) repository.ScheduleSeatRepository {
+	return &scheduleSeatRepository{db: tx}
+}
+func (r *scheduleSeatRepository) EnsureAvailableSeats(ctx context.Context, scheduleID uint, seatIDs []uint) error {
+	if len(seatIDs) == 0 {
+		return nil
+	}
+	rows := make([]entity.ScheduleSeat, 0, len(seatIDs))
+	for _, id := range seatIDs {
+		rows = append(rows, entity.ScheduleSeat{ScheduleID: scheduleID, SeatID: id})
+	}
+	return r.db.WithContext(ctx).Clauses(clause.OnConflict{DoNothing: true}).
+		Omit(clause.Associations).Create(&rows).Error
+}
+func (r *scheduleSeatRepository) LockAvailableSeats(ctx context.Context, scheduleID uint, seatIDs []uint) ([]entity.ScheduleSeat, error) {
+	var out []entity.ScheduleSeat
+	if len(seatIDs) == 0 {
+		return out, nil
+	}
+	err := r.db.WithContext(ctx).Clauses(clause.Locking{Strength: "UPDATE"}).
+		Where("schedule_id = ? AND seat_id IN ? AND status = ?", scheduleID, seatIDs, "available").
+		Find(&out).Error
+	return out, err
+}
+func (r *scheduleSeatRepository) SetStatus(ctx context.Context, ids []uint, status string, lockedAt *time.Time) error {
+	if len(ids) == 0 {
+		return nil
+	}
+	return r.db.WithContext(ctx).Model(&entity.ScheduleSeat{}).Where("id IN ?", ids).
+		Updates(map[string]interface{}{"status": status, "locked_at": lockedAt}).Error
 }

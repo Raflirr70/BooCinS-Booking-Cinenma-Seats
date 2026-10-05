@@ -20,29 +20,31 @@ type EmailVerification struct {
 }
 
 type Transaction struct {
-	ID            uint      `json:"id" gorm:"primaryKey"`
-	UserID        *uint     `json:"user_id"`
-	GuestOrderID  *uint     `json:"guest_order_id"`
-	Status        string    `json:"status" gorm:"type:varchar(20);not null;default:'pending'"`
-	TotalPrice    float64   `json:"total_price" gorm:"type:decimal(12,2);not null"`
-	PaymentMethod *string   `json:"payment_method" gorm:"type:varchar(20)"`
-	Source        string    `json:"source" gorm:"type:varchar(20);not null;default:'online'"`
-	StaffID       *uint     `json:"staff_id"`
-	User          *User     `json:"user,omitempty" gorm:"foreignKey:UserID"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+	ID              uint      `json:"id" gorm:"primaryKey"`
+	UserID          *uint     `json:"user_id"`
+	GuestOrderID    *uint     `json:"guest_order_id"`
+	MidtransOrderID *string   `json:"midtrans_order_id,omitempty" gorm:"type:varchar(50);uniqueIndex"`
+	SnapToken       *string   `json:"snap_token,omitempty" gorm:"type:text"`
+	Status          string    `json:"status" gorm:"type:varchar(20);not null;default:'pending'"`
+	TotalPrice      float64   `json:"total_price" gorm:"type:decimal(12,2);not null"`
+	PaymentMethod   *string   `json:"payment_method" gorm:"type:varchar(20)"`
+	Source          string    `json:"source" gorm:"type:varchar(20);not null;default:'online'"`
+	StaffID         *uint     `json:"staff_id"`
+	User            *User     `json:"user,omitempty" gorm:"foreignKey:UserID"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
 }
 
 type Ticket struct {
-	ID             uint       `json:"id" gorm:"primaryKey"`
-	UserID         *uint      `json:"user_id"`
-	ScheduleSeatID uint       `json:"schedule_seat_id" gorm:"not null"`
-	TransactionID  uint       `json:"transaction_id" gorm:"not null"`
-	QRToken        string     `json:"qr_token" gorm:"type:uuid;uniqueIndex;not null"`
-	Status         string     `json:"status" gorm:"type:varchar(20);not null;default:'active'"`
-	CheckedInAt    *time.Time `json:"checked_in_at"`
-	CheckedInBy    *uint      `json:"checked_in_by"`
-	CreatedAt      time.Time  `json:"created_at"`
+	ID             uint         `json:"id" gorm:"primaryKey"`
+	UserID         *uint        `json:"user_id"`
+	ScheduleSeatID uint         `json:"schedule_seat_id" gorm:"not null"`
+	TransactionID  uint         `json:"transaction_id" gorm:"not null"`
+	QRToken        string       `json:"qr_token" gorm:"type:uuid;uniqueIndex;not null"`
+	Status         string       `json:"status" gorm:"type:varchar(20);not null;default:'active'"`
+	CheckedInAt    *time.Time   `json:"checked_in_at"`
+	CheckedInBy    *uint        `json:"checked_in_by"`
+	CreatedAt      time.Time    `json:"created_at"`
 	ScheduleSeat   ScheduleSeat `json:"schedule_seat" gorm:"foreignKey:ScheduleSeatID"`
 	Transaction    Transaction  `json:"transaction" gorm:"foreignKey:TransactionID"`
 }

@@ -42,6 +42,9 @@ func main() {
 	ScheduleRepo := postgres.NewScheduleRepository(db)
 	promoRepo := postgres.NewPromoRepository(db)
 	scheduleSeatRepo := postgres.NewScheduleSeatRepository(db)
+	transactionRepo := postgres.NewTransactionRepository(db)
+	ticketRepo := postgres.NewTicketRepository(db)
+	guestOrderRepo := postgres.NewGuestOrderRepository(db)
 
 	//===================== Usecase =====================
 
@@ -53,6 +56,7 @@ func main() {
 	scheduleSeatUC := usecase.NewScheduleSeatUsecase(scheduleSeatRepo)
 	ScheduleUC := usecase.NewScheduleUsecase(ScheduleRepo, filmRepo, roomRepo)
 	promoUC := usecase.NewPromoUsecase(promoRepo)
+	bookingUC := usecase.NewBookingUsecase(db, ScheduleRepo, seatRepo, scheduleSeatRepo, transactionRepo, ticketRepo, guestOrderRepo, userRepo, cfg.Midtrans)
 
 	//===================== handler =====================
 
@@ -64,6 +68,7 @@ func main() {
 	ScheduleHandler := handler.NewScheduleHandler(ScheduleUC)
 	promoHandler := handler.NewPromoHandler(promoUC)
 	homeHandler := handler.NewHomeHandler(authUC, filmUC, ScheduleUC, scheduleSeatUC, promoUC)
+	bookingHandler := handler.NewBookingHandler(bookingUC)
 
 	r := router.SetupRouter(
 		authHandler,
@@ -73,6 +78,7 @@ func main() {
 		ScheduleHandler,
 		promoHandler,
 		homeHandler,
+		bookingHandler,
 		cfg.JWT.Secret,
 		redisClient,
 	)

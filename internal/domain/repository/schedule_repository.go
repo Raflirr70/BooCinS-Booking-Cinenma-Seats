@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"github.com/rafli/boocins/internal/domain/entity"
 	"gorm.io/gorm"
@@ -35,6 +36,7 @@ type ScheduleRepository interface {
 	FindByID(ctx context.Context, id uint) (*entity.Schedule, error)
 	FindByRoom(ctx context.Context, roomID uint) ([]entity.Schedule, error)
 	FindByFilm(ctx context.Context, filmID uint) ([]entity.Schedule, error)
+	WithTx(tx *gorm.DB) ScheduleRepository
 }
 
 type ScheduleSeatRepository interface {
@@ -43,4 +45,8 @@ type ScheduleSeatRepository interface {
 	Delete(ctx context.Context, ss *entity.ScheduleSeat) error
 	FindByID(ctx context.Context, id uint) (*entity.ScheduleSeat, error)
 	FindBySchedule(ctx context.Context, scheduleID uint) ([]entity.ScheduleSeat, error)
+	WithTx(tx *gorm.DB) ScheduleSeatRepository
+	EnsureAvailableSeats(ctx context.Context, scheduleID uint, seatIDs []uint) error
+	LockAvailableSeats(ctx context.Context, scheduleID uint, seatIDs []uint) ([]entity.ScheduleSeat, error)
+	SetStatus(ctx context.Context, ids []uint, status string, lockedAt *time.Time) error
 }

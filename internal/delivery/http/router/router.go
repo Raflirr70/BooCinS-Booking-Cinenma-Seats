@@ -15,6 +15,7 @@ func SetupRouter(
 	scheduleHandler *handler.ScheduleHandler,
 	promoHandler *handler.PromoHandler,
 	homeHandler *handler.HomeHandler,
+	bookingHandler *handler.BookingHandler,
 	jwtSecret string,
 	redisClient *redis.Client,
 ) *gin.Engine {
@@ -38,6 +39,7 @@ func SetupRouter(
 		// Protected routes
 		protected := api.Group("")
 		protected.Use(middleware.AuthMiddleware(jwtSecret, redisClient))
+		protected.POST("/booking", bookingHandler.Create)
 		{
 			protected.POST("/auth/logout", authHandler.Logout)
 			protected.GET("/auth/profile", authHandler.GetProfile)
@@ -82,7 +84,7 @@ func SetupRouter(
 		api.GET("/home", homeHandler.GetHome)
 		api.GET("/schedules/:id/seats", homeHandler.GetScheduleMapSeats)
 		api.GET("/promo", promoHandler.GetCurrent)
-		api.POST("/booking", )
+		api.POST("/booking/guest", bookingHandler.CreateGuest)
 	}
 
 	return r
