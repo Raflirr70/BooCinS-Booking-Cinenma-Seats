@@ -28,7 +28,12 @@ func AuthMiddleware(jwtSecret string, redisClient *redis.Client) gin.HandlerFunc
 		tokenString := parts[1]
 
 		blacklistKey := fmt.Sprintf("blacklist:%s", tokenString)
-		if redisClient.Exists(c.Request.Context(), blacklistKey).Val() > 0 {
+		n, err := redisClient.Exists(c.Request.Context(), blacklistKey).Result()
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusServiceUnavailable, response.Error("auth service unavailable"))
+			return
+		}
+		if n > 0 {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, response.Error("token has been revoked"))
 			return
 		}

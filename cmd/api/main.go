@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"github.com/joho/godotenv"
@@ -29,6 +30,9 @@ func main() {
 	}
 
 	redisClient := cache.NewRedisClient(cfg.Redis)
+	if err := redisClient.Ping(context.Background()).Err(); err != nil {
+		log.Fatalf("failed to connect redis: %v", err)
+	}
 
 	userRepo := postgres.NewUserRepository(db)
 	authUC := usecase.NewAuthUsecase(userRepo, redisClient, cfg.JWT)
