@@ -17,54 +17,52 @@ import (
 
 func main() {
 	logger.Init()
-
 	if err := godotenv.Load(); err != nil {
 		log.Println("warning: .env file not found, using system env")
 	}
-
 	cfg := config.LoadConfig()
-
 	db, err := database.NewPostgresDB(cfg.Database)
 	if err != nil {
 		log.Fatalf("failed to connect database: %v", err)
 	}
-
+	logger.Info.Printf("PostgreSQL Connected")
 	redisClient := cache.NewRedisClient(cfg.Redis)
 	if err := redisClient.Ping(context.Background()).Err(); err != nil {
 		log.Fatalf("failed to connect redis: %v", err)
 	}
+	logger.Info.Printf("Redis Connected")
+
+	// ===================== Repository =====================
 
 	userRepo := postgres.NewUserRepository(db)
-	authUC := usecase.NewAuthUsecase(userRepo, redisClient, cfg.JWT)
-	authHandler := handler.NewAuthHandler(authUC)
-
 	genreRepo := postgres.NewGenreRepository(db)
-	genreUC := usecase.NewGenreUsecase(genreRepo)
-	genreHandler := handler.NewGenreHandler(genreUC)
-
 	filmRepo := postgres.NewFilmRepository(db)
-	filmUC := usecase.NewFilmUsecase(filmRepo, genreRepo)
-	filmHandler := handler.NewFilmHandler(filmUC)
-
 	seatRepo := postgres.NewSeatRepository(db)
-	// seatUC := usecase.NewSeatUsecase(seatRepo)
-	// seatHandler := handler.NewSeatHandler(seatUC)
-
 	roomRepo := postgres.NewRoomRepository(db)
-	roomUC := usecase.NewRoomUsecase(roomRepo, seatRepo, db)
-	roomHandler := handler.NewRoomHandler(roomUC)
-
-	scheduleSeatRepo := postgres.NewScheduleSeatRepository(db)
-	scheduleSeatUC := usecase.NewScheduleSeatUsecase(scheduleSeatRepo)
-
 	ScheduleRepo := postgres.NewScheduleRepository(db)
-	ScheduleUC := usecase.NewScheduleUsecase(ScheduleRepo, filmRepo, roomRepo)
-	ScheduleHandler := handler.NewScheduleHandler(ScheduleUC)
-
 	promoRepo := postgres.NewPromoRepository(db)
-	promoUC := usecase.NewPromoUsecase(promoRepo)
-	promoHandler := handler.NewPromoHandler(promoUC)
+	scheduleSeatRepo := postgres.NewScheduleSeatRepository(db)
 
+	//===================== Usecase =====================
+
+	authUC := usecase.NewAuthUsecase(userRepo, redisClient, cfg.JWT)
+	genreUC := usecase.NewGenreUsecase(genreRepo)
+	filmUC := usecase.NewFilmUsecase(filmRepo, genreRepo)
+	// seatUC := usecase.NewSeatUsecase(seatRepo)
+	roomUC := usecase.NewRoomUsecase(roomRepo, seatRepo, db)
+	scheduleSeatUC := usecase.NewScheduleSeatUsecase(scheduleSeatRepo)
+	ScheduleUC := usecase.NewScheduleUsecase(ScheduleRepo, filmRepo, roomRepo)
+	promoUC := usecase.NewPromoUsecase(promoRepo)
+
+	//===================== handler =====================
+
+	authHandler := handler.NewAuthHandler(authUC)
+	genreHandler := handler.NewGenreHandler(genreUC)
+	filmHandler := handler.NewFilmHandler(filmUC)
+	// seatHandler := handler.NewSeatHandler(seatUC)
+	roomHandler := handler.NewRoomHandler(roomUC)
+	ScheduleHandler := handler.NewScheduleHandler(ScheduleUC)
+	promoHandler := handler.NewPromoHandler(promoUC)
 	homeHandler := handler.NewHomeHandler(authUC, filmUC, ScheduleUC, scheduleSeatUC, promoUC)
 
 	r := router.SetupRouter(

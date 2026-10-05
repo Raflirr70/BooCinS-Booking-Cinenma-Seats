@@ -22,8 +22,6 @@ func SetupRouter(
 
 	api := r.Group("/api/v1")
 	{
-		api.GET("/home", homeHandler.GetHome)
-		api.GET("/schedules/:id/seats", homeHandler.GetScheduleMapSeats)
 		auth := api.Group("/auth")
 		{
 			auth.POST("/register", authHandler.Register)
@@ -67,9 +65,6 @@ func SetupRouter(
 			admin.PUT("/room/:id", roomHandler.Update)
 			admin.DELETE("/room/:id", roomHandler.Delete)
 			admin.GET("/room/:id", roomHandler.GetWithDetail)
-			// admin.GET("/Media", genreHandler.GetAll)
-			// admin.GET("/genres", genreHandler.GetAll)
-			// admin.GET("/genres", genreHandler.GetAll)
 
 			admin.GET("/schedule", scheduleHandler.GetAll)
 			admin.POST("/schedule", scheduleHandler.Create)
@@ -78,12 +73,16 @@ func SetupRouter(
 			admin.GET("/schedule/:id/film", scheduleHandler.GetByFilm)
 			admin.GET("/schedule/:id/room", scheduleHandler.GetByRoom)
 
-			api.POST("/promo", promoHandler.Create)
-			api.GET("/promo", promoHandler.GetCurrent)
-			api.GET("/promo/:id", promoHandler.GetByID)
-			api.PUT("/promo/:id", promoHandler.Update)
-			api.DELETE("/promo/:id", promoHandler.Delete)
+			admin.POST("/promo", promoHandler.Create)
+			admin.GET("/promo/:id", promoHandler.GetByID)
+			admin.PUT("/promo/:id", promoHandler.Update)
+			admin.DELETE("/promo/:id", promoHandler.Delete)
 		}
+
+		api.GET("/home", homeHandler.GetHome)
+		api.GET("/schedules/:id/seats", homeHandler.GetScheduleMapSeats)
+		api.GET("/promo", promoHandler.GetCurrent)
+		api.POST("/booking", )
 	}
 
 	return r
